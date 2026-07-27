@@ -699,7 +699,7 @@
     </div>
     <footer>
         <div class="footer-container">
-            <div>&copy; KreZzMonitor. Все права защищены. Версия 1.1.2.9</div>
+            <div>&copy; KreZzMonitor. Все права защищены. Версия 1.1.3.0</div>
             <div class="footer-links">
                 <a onclick="showPage('contacts')">Контакты</a>
                 <a href="https://discord.gg/hTdb4ZyBzS" target="_blank"><i class="fab fa-discord"></i> Discord</a>
@@ -2213,13 +2213,16 @@
                         return aOnline ? -1 : 1;
                     });
 
-                    renderMyServers(myServers);
+                    // Получаем роль пользователя один раз
+                    const role = await getUserRole(currentUser.uid);
+                    const isModerator = (role === 'moderator');
+                    renderMyServers(myServers, isModerator);
                 }, (error) => {
                     document.getElementById('myServersContainer').innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--text-muted);">Ошибка: ' + error.message + '</div>';
                 });
         }
 
-        function renderMyServers(items) {
+        function renderMyServers(items, isModerator) {
             const container = document.getElementById('myServersContainer');
             if (!items || items.length === 0) {
                 container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><h3>У вас пока нет добавленных серверов</h3><p style="color:var(--text-muted);">Добавьте свой первый сервер, нажав на кнопку "Добавить сервер" в меню</p></div>';
@@ -2257,10 +2260,8 @@
                 const progressClass = online ? '' : 'offline';
                 const officialBadge = server.isOfficial ? '<i class="fas fa-check-circle" style="color:#1da1f2;font-size:13px;margin-left:4px;" title="Официальный сервер"></i>' : '';
 
-                // Проверка, может ли пользователь редактировать/поднимать
                 const isOwner = currentUser && server.addedByUserId === currentUser.uid;
-                const isMod = currentUser ? await getUserRole(currentUser.uid).then(r => r === 'moderator') : false;
-                const canEdit = isOwner || isMod;
+                const canEdit = isOwner || isModerator;
                 const canBoost = isOwner && online;
 
                 html += `<div class="server-row" data-id="${server.id}">
@@ -2291,7 +2292,7 @@
                             </div>
                             ${canEdit ? `<button class="edit-btn" onclick="openEditServer('${server.id}')"><i class="fas fa-pen"></i> Редактировать</button>` : ''}
                             ${canBoost ? `<button class="boost-btn" onclick="boostServer('${server.id}')"><i class="fas fa-arrow-up"></i> Поднять наверх</button>` : ''}
-                            ${isMod ? `<div class="mod-controls" style="display:flex;margin-top:4px;">
+                            ${isModerator ? `<div class="mod-controls" style="display:flex;margin-top:4px;">
                                 <button class="mod-btn mod-btn-delete" onclick="deleteServerAsModerator('${server.id}', true)">🗑️ Удалить + Варн</button>
                                 <button class="mod-btn mod-btn-abyss" onclick="toggleServerAbyss('${server.id}')">🕳️ ${server.inAbyss ? 'Из бездны' : 'В бездну'}</button>
                                 <button class="mod-btn mod-btn-official" onclick="toggleServerOfficial('${server.id}')">✓ ${server.isOfficial ? 'Убрать галочку' : 'Сделать офиц.'}</button>
