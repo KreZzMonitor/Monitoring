@@ -33,6 +33,8 @@
         .nav-logout-btn:hover{background:#c82333!important}
         .nav-user-info{color:#b3b3b3!important;font-size:13px;display:flex;align-items:center;gap:6px;padding:0 8px!important;height:100%!important;cursor:default}
         .nav-user-info img{width:28px;height:28px;border-radius:50%}
+        .nav-user-info .user-uid{font-size:10px;color:var(--text-muted);margin-left:4px;cursor:pointer;border-bottom:1px dashed var(--border-color)}
+        .nav-user-info .user-uid:hover{color:var(--text-link)}
         .nav-add-btn{color:#b3b3b3!important;background:transparent!important;border-radius:0!important;padding:0 10px!important;height:100%!important;margin:auto 0!important;font-size:14px}
         .nav-add-btn:hover{color:#fff!important;background:var(--bg-header-hover)!important}
         #authButtons{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
@@ -222,6 +224,16 @@
         .mod-btn-official:hover{background:#1a8cd8}
         .edit-btn{background:#6c757d;color:#fff;border:none;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;transition:all .2s;white-space:nowrap}
         .edit-btn:hover{background:#5a6268}
+        .admin-panel{max-width:800px;margin:0 auto;background:var(--bg-card);border-radius:12px;padding:20px;border:1px solid var(--border-color)}
+        .admin-panel h2{font-size:20px;margin-bottom:12px}
+        .admin-panel .form-group{margin-bottom:12px}
+        .admin-panel .form-group label{display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+        .admin-panel input{width:100%;padding:8px 12px;border:1px solid var(--border-color);border-radius:4px;background:var(--bg-input);color:var(--text-primary);font-size:14px}
+        .admin-panel .info-text{font-size:13px;color:var(--text-secondary);margin-bottom:10px}
+        .admin-panel .role-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:bold;background:#f0f0f0;color:#333}
+        .admin-panel .role-badge.admin{background:#dc3545;color:#fff}
+        .admin-panel .role-badge.moderator{background:#f59e0b;color:#fff}
+        .admin-panel .role-badge.user{background:#6c757d;color:#fff}
 
         /* ----- АДАПТИВНОСТЬ ДЛЯ ПЛАНШЕТОВ И ТЕЛЕФОНОВ ----- */
         @media(max-width:1024px){.main-content{max-width:100%;padding:0 10px}header{padding:0 12px;height:auto;gap:4px;padding-top:6px;padding-bottom:6px}nav{gap:4px}nav a{font-size:13px;padding:0 8px}.header-left{font-size:16px}}
@@ -244,6 +256,7 @@
             <a onclick="showPage('main')">Новые сервера</a>
             <a class="nav-add-btn" onclick="showPage('add')">Добавить сервер</a>
             <a id="myServersNav" onclick="showPage('myservers')" style="display:none;color:#f59e0b!important;">Мои сервера</a>
+            <a id="adminNav" onclick="showPage('admin')" style="display:none;color:#dc3545!important;">Админ-панель</a>
             <div id="authButtons">
                 <button class="nav-btn nav-login-btn" onclick="showPage('login')">Войти</button>
                 <button class="nav-btn nav-register-btn" onclick="showPage('register')">Зарегистрироваться</button>
@@ -252,6 +265,7 @@
                 <span class="nav-user-info" id="userDisplayName">
                     <img id="userAvatar" src="" alt="avatar" />
                     <span id="userNameText"></span>
+                    <span class="user-uid" id="userUidDisplay" title="Ваш цифровой ID (нажмите для копирования)"></span>
                 </span>
                 <button class="nav-btn nav-logout-btn" onclick="logoutUser()">Выйти</button>
             </div>
@@ -288,6 +302,34 @@
                 <h1><i class="fas fa-user-cog" style="color:var(--boost-color);"></i> Мои сервера</h1>
                 <p class="top-description">Здесь отображаются сервера, которые вы добавили. Вы можете поднять сервер наверх раз в сутки, если он онлайн, а также редактировать информацию.</p>
                 <div class="servers-container" id="myServersContainer"><div style="text-align:center;padding:30px 0;color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:32px;display:block;margin-bottom:8px;"></i>Загрузка...</div></div>
+            </div>
+        </div>
+        
+        <div class="page" id="page-admin">
+            <div style="margin-top:6px;margin-bottom:12px;">
+                <button class="btn btn-back" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> Назад</button>
+            </div>
+            <div class="admin-panel">
+                <h2><i class="fas fa-user-shield"></i> Админ-панель</h2>
+                <p class="top-description">Управление ролями пользователей. Введите UID пользователя и назначьте ему роль модератора.</p>
+                <div class="form-group">
+                    <label>UID пользователя</label>
+                    <input type="text" id="adminUidInput" placeholder="Введите UID (цифровой ID)" />
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-warning" id="adminSetModeratorBtn"><i class="fas fa-user-tag"></i> Назначить модератором</button>
+                    <button class="btn btn-danger" id="adminRemoveModeratorBtn" style="margin-left:8px;"><i class="fas fa-user-minus"></i> Снять модератора</button>
+                </div>
+                <div id="adminResult" style="margin-top:12px;font-size:13px;color:var(--text-secondary);"></div>
+                <hr style="margin:16px 0;border-color:var(--border-color);" />
+                <div class="info-text">
+                    <strong>Текущий пользователь:</strong> <span id="adminCurrentUser">—</span><br>
+                    <strong>Ваша роль:</strong> <span id="adminCurrentRole">—</span><br>
+                    <strong>Ваш UID:</strong> <span id="adminCurrentUid">—</span>
+                </div>
+                <div class="info-text" style="margin-top:8px;">
+                    <strong>Как получить UID пользователя?</strong> Попросите пользователя нажать на свой UID в меню (рядом с именем) — он скопируется в буфер обмена.
+                </div>
             </div>
         </div>
         
@@ -699,7 +741,7 @@
     </div>
     <footer>
         <div class="footer-container">
-            <div>&copy; KreZzMonitor. Все права защищены. Версия 1.1.3.1</div>
+            <div>&copy; KreZzMonitor. Все права защищены. Версия 1.1.4.0</div>
             <div class="footer-links">
                 <a onclick="showPage('contacts')">Контакты</a>
                 <a href="https://discord.gg/hTdb4ZyBzS" target="_blank"><i class="fab fa-discord"></i> Discord</a>
@@ -747,6 +789,8 @@
             const c = document.getElementById('userNameText');
             const d = document.getElementById('userAvatar');
             const myNav = document.getElementById('myServersNav');
+            const adminNav = document.getElementById('adminNav');
+            const uidDisplay = document.getElementById('userUidDisplay');
             if (user) {
                 currentUser = user;
                 a.style.display = 'none';
@@ -755,11 +799,29 @@
                 c.textContent = displayName;
                 d.src = user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(displayName) + '&background=2980b9&color=fff';
                 myNav.style.display = 'flex';
+                // Показываем UID и делаем его кликабельным для копирования
+                uidDisplay.textContent = user.uid.substring(0, 8) + '…';
+                uidDisplay.title = 'Ваш UID: ' + user.uid + ' (нажмите для копирования)';
+                uidDisplay.style.cursor = 'pointer';
+                uidDisplay.onclick = function() {
+                    copyToClipboard(user.uid);
+                };
+                // Проверяем роль для показа админ-панели
+                getUserRole(user.uid).then(role => {
+                    if (role === 'admin') {
+                        adminNav.style.display = 'flex';
+                    } else {
+                        adminNav.style.display = 'none';
+                    }
+                });
             } else {
                 currentUser = null;
                 a.style.display = 'flex';
                 b.style.display = 'none';
                 myNav.style.display = 'none';
+                adminNav.style.display = 'none';
+                uidDisplay.textContent = '';
+                uidDisplay.onclick = null;
             }
         }
         auth.onAuthStateChanged(user => updateUIForUser(user));
@@ -828,10 +890,49 @@
             } catch (e) { return false; }
         }
 
+        // ----- АДМИН-ФУНКЦИИ -----
+        async function setUserRole(uid, role) {
+            if (!currentUser) { alert('Вы не авторизованы'); return; }
+            const myRole = await getUserRole(currentUser.uid);
+            if (myRole !== 'admin') { alert('Только администратор может управлять ролями'); return; }
+            if (!uid) { alert('Введите UID пользователя'); return; }
+            try {
+                const userDoc = await db.collection('users').doc(uid).get();
+                if (!userDoc.exists) { alert('Пользователь с таким UID не найден'); return; }
+                await db.collection('users').doc(uid).update({ role: role });
+                alert(`✅ Роль пользователя ${uid} изменена на ${role}`);
+                document.getElementById('adminResult').innerHTML = `<span style="color:var(--success-color);">✅ Роль обновлена: ${uid} → ${role}</span>`;
+            } catch (e) {
+                alert('❌ Ошибка: ' + e.message);
+                document.getElementById('adminResult').innerHTML = `<span style="color:var(--danger-color);">❌ Ошибка: ${e.message}</span>`;
+            }
+        }
+
+        document.getElementById('adminSetModeratorBtn').addEventListener('click', function() {
+            const uid = document.getElementById('adminUidInput').value.trim();
+            setUserRole(uid, 'moderator');
+        });
+        document.getElementById('adminRemoveModeratorBtn').addEventListener('click', function() {
+            const uid = document.getElementById('adminUidInput').value.trim();
+            setUserRole(uid, 'user');
+        });
+
+        // Обновление информации в админ-панели при открытии
+        function updateAdminPanel() {
+            if (!currentUser) return;
+            const uid = currentUser.uid;
+            document.getElementById('adminCurrentUser').textContent = currentUser.displayName || currentUser.email || '—';
+            document.getElementById('adminCurrentUid').textContent = uid;
+            getUserRole(uid).then(role => {
+                document.getElementById('adminCurrentRole').textContent = role;
+            });
+        }
+
+        // ----- ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений) -----
         async function deleteServerAsModerator(serverId, addWarn = false) {
             if (!currentUser) { alert('⚠️ Необходимо войти в аккаунт'); return; }
             const role = await getUserRole(currentUser.uid);
-            if (role !== 'moderator') { alert('❌ У вас нет прав модератора'); return; }
+            if (role !== 'moderator' && role !== 'admin') { alert('❌ У вас нет прав модератора'); return; }
             if (!confirm('Вы уверены, что хотите удалить этот сервер?')) return;
             try {
                 const serverDoc = await db.collection('servers').doc(serverId).get();
@@ -857,7 +958,7 @@
         async function toggleServerAbyss(serverId) {
             if (!currentUser) { alert('⚠️ Необходимо войти в аккаунт'); return; }
             const role = await getUserRole(currentUser.uid);
-            if (role !== 'moderator') { alert('❌ У вас нет прав модератора'); return; }
+            if (role !== 'moderator' && role !== 'admin') { alert('❌ У вас нет прав модератора'); return; }
             try {
                 const serverDoc = await db.collection('servers').doc(serverId).get();
                 if (!serverDoc.exists) { alert('❌ Сервер не найден'); return; }
@@ -873,7 +974,7 @@
         async function toggleServerOfficial(serverId) {
             if (!currentUser) { alert('⚠️ Необходимо войти в аккаунт'); return; }
             const role = await getUserRole(currentUser.uid);
-            if (role !== 'moderator') { alert('❌ У вас нет прав модератора'); return; }
+            if (role !== 'moderator' && role !== 'admin') { alert('❌ У вас нет прав модератора'); return; }
             try {
                 const serverDoc = await db.collection('servers').doc(serverId).get();
                 if (!serverDoc.exists) { alert('❌ Сервер не найден'); return; }
@@ -964,12 +1065,14 @@
             try {
                 const user = await auth.createUserWithEmailAndPassword(email, pass);
                 await user.user.updateProfile({ displayName: randomNick });
-                const isModerator = email === 'gurinnikita02@gmail.com';
+                let role = 'user';
+                if (email === 'gurinnikita02@gmail.com') role = 'moderator';
+                if (email === 'analitik@krezzmonitor.github.io') role = 'admin';
                 await db.collection('users').doc(user.user.uid).set({
                     displayName: randomNick,
                     email: email,
                     verified: false,
-                    role: isModerator ? 'moderator' : 'user',
+                    role: role,
                     warns: 0,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
@@ -1072,6 +1175,7 @@
             if (id === 'add') { generateCaptcha(); document.getElementById('captchaInput').value = ''; }
             if (id === 'stats' && currentStatsServerId) loadServerStats(currentStatsServerId);
             if (id === 'myservers') { loadMyServers(); }
+            if (id === 'admin') { updateAdminPanel(); }
             if (id === 'login' || id === 'register') {
                 document.getElementById('loginError').textContent = '';
                 document.getElementById('registerError').textContent = '';
@@ -1111,7 +1215,6 @@
         // ----- РЕКЛАМА (закрытие) -----
         const sideAd = document.getElementById('sideAd');
         const sideAdClose = document.getElementById('sideAdClose');
-        // Если пользователь ранее закрыл рекламу, скрываем её, иначе показываем принудительно
         if (localStorage.getItem('sideAdClosed') === '1' && sideAd) {
             sideAd.classList.add('hidden');
             sideAd.style.display = 'none';
@@ -1289,7 +1392,7 @@
             if (!currentUser) { alert('Войдите в аккаунт'); return; }
             const role = await getUserRole(currentUser.uid);
             const isOwner = servers.find(s => s.id === serverId)?.addedByUserId === currentUser.uid;
-            if (!isOwner && role !== 'moderator') { alert('У вас нет прав редактировать этот сервер'); return; }
+            if (!isOwner && role !== 'moderator' && role !== 'admin') { alert('У вас нет прав редактировать этот сервер'); return; }
 
             try {
                 const doc = await db.collection('servers').doc(serverId).get();
@@ -2043,7 +2146,7 @@
 
             if (currentUser) {
                 getUserRole(currentUser.uid).then(role => {
-                    if (role === 'moderator') {
+                    if (role === 'moderator' || role === 'admin') {
                         document.querySelectorAll('.mod-controls').forEach(el => {
                             el.style.display = 'flex';
                         });
@@ -2229,7 +2332,7 @@
 
                     // Получаем роль пользователя один раз
                     const role = await getUserRole(currentUser.uid);
-                    const isModerator = (role === 'moderator');
+                    const isModerator = (role === 'moderator' || role === 'admin');
                     renderMyServers(myServers, isModerator);
                 }, (error) => {
                     document.getElementById('myServersContainer').innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--text-muted);">Ошибка: ' + error.message + '</div>';
