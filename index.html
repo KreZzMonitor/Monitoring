@@ -17,7 +17,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <meta name="yandex-verification" content="562347cf38a747b0" />
     <meta name="google-site-verification" content="Ci1xjcQI1VrrzrwTn-t_tX298PWylmQNJQ7PFGYjodU" />
-    <meta name="yandex-verification" content="562347cf38a747b0" />
     <title>KreZzMonitor — мониторинг серверов Minecraft</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -213,22 +212,30 @@
         .boost-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
         .boost-btn.used{background:var(--text-muted)}
         .boost-info{font-size:10px;color:var(--text-muted);white-space:nowrap}
-        .side-ad{position:fixed;left:20px;top:130px;width:180px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:16px 14px;text-align:center;box-shadow:0 4px 12px var(--shadow-color);z-index:100;transition:background .3s,border .3s}
+        .side-ad{position:fixed;right:20px;top:130px;width:240px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:20px 16px;text-align:center;box-shadow:0 4px 12px var(--shadow-color);z-index:100;transition:background .3s,border .3s}
         .side-ad .side-ad-close{position:absolute;top:4px;right:6px;cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;background:0;border:0;padding:2px}
         .side-ad .side-ad-close:hover{color:var(--danger-color)}
-        .side-ad .side-ad-title{font-size:14px;font-weight:bold;color:var(--text-link);margin-bottom:8px;line-height:1.3}
-        .side-ad .side-ad-text{font-size:11px;color:var(--text-secondary);line-height:1.5;margin-bottom:8px}
-        .side-ad .side-ad-contact{font-size:12px;color:var(--text-link);font-weight:600;word-break:break-word}
+        .side-ad .side-ad-title{font-size:16px;font-weight:bold;color:var(--text-link);margin-bottom:10px;line-height:1.3}
+        .side-ad .side-ad-text{font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:10px}
+        .side-ad .side-ad-contact{font-size:14px;color:var(--text-link);font-weight:600;word-break:break-word}
         .side-ad.hidden{display:none}
-        .mobile-ad{display:none;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:16px;text-align:center;margin:20px 0;box-shadow:0 4px 12px var(--shadow-color)}
-        .mobile-ad .mobile-ad-title{font-size:15px;font-weight:bold;color:var(--text-link);margin-bottom:8px}
-        .mobile-ad .mobile-ad-text{font-size:12px;color:var(--text-secondary);line-height:1.5;margin-bottom:8px}
-        .mobile-ad .mobile-ad-contact{font-size:13px;color:var(--text-link);font-weight:600}
+        .mobile-ad{display:none;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:20px;text-align:center;margin:20px 0;box-shadow:0 4px 12px var(--shadow-color)}
+        .mobile-ad .mobile-ad-title{font-size:17px;font-weight:bold;color:var(--text-link);margin-bottom:10px}
+        .mobile-ad .mobile-ad-text{font-size:13px;color:var(--text-secondary);line-height:1.5;margin-bottom:10px}
+        .mobile-ad .mobile-ad-contact{font-size:15px;color:var(--text-link);font-weight:600}
+        .mod-controls{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+        .mod-btn{padding:6px 12px;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+        .mod-btn-delete{background:#dc3545;color:#fff}
+        .mod-btn-delete:hover{background:#c82333}
+        .mod-btn-abyss{background:#f59e0b;color:#fff}
+        .mod-btn-abyss:hover{background:#d97706}
+        .mod-btn-official{background:#1da1f2;color:#fff}
+        .mod-btn-official:hover{background:#1a8cd8}
 
         /* ----- АДАПТИВНОСТЬ ДЛЯ ПЛАНШЕТОВ И ТЕЛЕФОНОВ ----- */
         @media(max-width:1024px){.main-content{max-width:100%;padding:0 10px}header{padding:0 12px;height:auto;gap:4px;padding-top:6px;padding-bottom:6px}nav{gap:3px}nav a{font-size:11px;padding:0 6px}.header-left{font-size:14px}}
-        @media(max-width:768px){.main-content{margin:10px auto}.server-row{padding:8px 10px}.server-title{font-size:12px}.server-meta-line{font-size:9px}.server-icon{width:28px;height:28px;margin-right:8px}.online-progress-bar{height:16px;font-size:9px}.add-form-page{padding:16px}.add-form-page .form-row{grid-template-columns:1fr}.auth-page,.verify-page{padding:24px 16px}.stats-page{padding:16px}.stats-page .stats-detail{grid-template-columns:1fr 1fr}.footer-container{flex-direction:column;gap:6px;text-align:center}.footer-links a{margin:0 6px}.side-ad{display:none}.mobile-ad{display:block}.btn{padding:12px 24px;font-size:15px}.btn-sm{padding:8px 16px;font-size:14px}}
-        @media(max-width:480px){h1{font-size:18px}.top-description{font-size:11px}.server-row{padding:6px 8px;gap:6px}.server-top-row{align-items:center}.server-icon{width:24px;height:24px;margin-right:6px;font-size:14px}.server-title{font-size:11px}.server-meta-line{font-size:8px;gap:2px 4px}.server-description{font-size:10px}.server-tags-line span{font-size:9px;padding:0 6px}.vote-block{padding:1px 6px;gap:4px}.vote-block .vote-arrow,.vote-block .vote-arrow-active{font-size:11px}.vote-block .vote-count{font-size:12px}.online-wrapper{gap:4px}.online-icon-svg{width:16px;height:16px}.online-progress-bar{height:14px;font-size:8px;min-width:50px}.version-box{padding:4px;gap:2px}.v-tag{font-size:9px;padding:1px 4px}.v-tag.all-versions{padding:1px 5px}.pagination{gap:3px}.page-link{padding:3px 6px;font-size:10px}.add-form-page{padding:12px}.add-form-page h2{font-size:17px}.add-form-page .form-group{margin-bottom:10px}.add-form-page input,.add-form-page select,.add-form-page textarea{padding:6px 10px;font-size:12px}.add-form-page .form-row{grid-template-columns:1fr}.auth-page,.verify-page{padding:18px 14px}.auth-page h2,.verify-page h2{font-size:18px}.auth-page .auth-sub,.verify-page .verify-sub{font-size:12px}.auth-btn,.verify-btn{padding:12px;font-size:15px}.stats-page{padding:12px}.stats-page h2{font-size:17px}.stats-page .stats-detail{grid-template-columns:1fr}.stats-page .stats-detail .stat-item .value{font-size:14px}.stats-page canvas{height:140px!important}.my-servers-page .server-actions-right{flex-direction:column;align-items:stretch;width:100%}.boost-btn{width:100%;text-align:center;padding:8px 12px;font-size:12px}.footer-container{font-size:9px}.footer-links a{font-size:9px;margin:0 4px}.side-ad{display:none}.btn{padding:14px 28px;font-size:16px}.btn-sm{padding:10px 18px;font-size:15px}}
+        @media(max-width:768px){.main-content{margin:10px auto}.server-row{padding:8px 10px}.server-title{font-size:12px}.server-meta-line{font-size:9px}.server-icon{width:28px;height:28px;margin-right:8px}.online-progress-bar{height:16px;font-size:9px}.add-form-page{padding:16px}.add-form-page .form-row{grid-template-columns:1fr}.auth-page,.verify-page{padding:24px 16px}.stats-page{padding:16px}.stats-page .stats-detail{grid-template-columns:1fr 1fr}.footer-container{flex-direction:column;gap:6px;text-align:center}.footer-links a{margin:0 6px}.side-ad{display:none}.mobile-ad{display:block}.btn{padding:14px 28px;font-size:16px}.btn-sm{padding:10px 18px;font-size:15px}}
+        @media(max-width:480px){h1{font-size:18px}.top-description{font-size:11px}.server-row{padding:6px 8px;gap:6px}.server-top-row{align-items:center}.server-icon{width:24px;height:24px;margin-right:6px;font-size:14px}.server-title{font-size:11px}.server-meta-line{font-size:8px;gap:2px 4px}.server-description{font-size:10px}.server-tags-line span{font-size:9px;padding:0 6px}.vote-block{padding:1px 6px;gap:4px}.vote-block .vote-arrow,.vote-block .vote-arrow-active{font-size:11px}.vote-block .vote-count{font-size:12px}.online-wrapper{gap:4px}.online-icon-svg{width:16px;height:16px}.online-progress-bar{height:14px;font-size:8px;min-width:50px}.version-box{padding:4px;gap:2px}.v-tag{font-size:9px;padding:1px 4px}.v-tag.all-versions{padding:1px 5px}.pagination{gap:3px}.page-link{padding:3px 6px;font-size:10px}.add-form-page{padding:12px}.add-form-page h2{font-size:17px}.add-form-page .form-group{margin-bottom:10px}.add-form-page input,.add-form-page select,.add-form-page textarea{padding:6px 10px;font-size:12px}.add-form-page .form-row{grid-template-columns:1fr}.auth-page,.verify-page{padding:18px 14px}.auth-page h2,.verify-page h2{font-size:18px}.auth-page .auth-sub,.verify-page .verify-sub{font-size:12px}.auth-btn,.verify-btn{padding:14px;font-size:16px}.stats-page{padding:12px}.stats-page h2{font-size:17px}.stats-page .stats-detail{grid-template-columns:1fr}.stats-page .stats-detail .stat-item .value{font-size:14px}.stats-page canvas{height:140px!important}.my-servers-page .server-actions-right{flex-direction:column;align-items:stretch;width:100%}.boost-btn{width:100%;text-align:center;padding:10px 14px;font-size:13px}.footer-container{font-size:9px}.footer-links a{font-size:9px;margin:0 4px}.side-ad{display:none}.btn{padding:16px 32px;font-size:17px}.btn-sm{padding:12px 20px;font-size:16px}}
     </style>
 </head>
 <body>
@@ -236,7 +243,7 @@
     <div id="splashScreen"><div class="spinner"></div><h2>Проверка соединения...</h2><p>Защита от DDoS</p></div>
     <div class="side-ad" id="sideAd">
         <button class="side-ad-close" id="sideAdClose" title="Закрыть">✕</button>
-        <div class="side-ad-title">📢 Реклама</div>
+        <div class="side-ad-title">📢 Ваша реклама</div>
         <div class="side-ad-text">Тут может быть ваша реклама</div>
         <div class="side-ad-contact">Писать в тг: @SpookieHeart</div>
     </div>
@@ -275,7 +282,7 @@
             </div>
             <div class="servers-container" id="serversContainer"><div style="text-align:center;padding:30px 0;color:var(--text-muted);"><i class="fas fa-server" style="font-size:28px;display:block;margin-bottom:8px;"></i>Загрузка...</div></div>
             <div class="mobile-ad">
-                <div class="mobile-ad-title">📢 Реклама</div>
+                <div class="mobile-ad-title">📢 Ваша реклама</div>
                 <div class="mobile-ad-text">Тут может быть ваша реклама</div>
                 <div class="mobile-ad-contact">Писать в тг: @SpookieHeart</div>
             </div>
@@ -611,6 +618,63 @@
         async function setUserVerified(uid){try{await db.collection('users').doc(uid).set({verified:true},{merge:true});return true}catch(e){return false}}
         async function getUserRole(uid){try{const d=await db.collection('users').doc(uid).get();if(d.exists){const data=d.data();return data.role||'user'}return 'user'}catch(e){return 'user'}}
         async function getUserWarns(uid){try{const d=await db.collection('users').doc(uid).get();if(d.exists){const data=d.data();return data.warns||0}return 0}catch(e){return 0}}
+        async function addWarnToUser(uid){try{const warns=await getUserWarns(uid);const newWarns=warns+1;await db.collection('users').doc(uid).update({warns:newWarns});if(newWarns>=3){await db.collection('users').doc(uid).update({banned:true});return{warns:newWarns,banned:true}}return{warns:newWarns,banned:false}}catch(e){return null}}
+        async function isUserBanned(uid){try{const d=await db.collection('users').doc(uid).get();if(d.exists){const data=d.data();return data.banned===true}return false}catch(e){return false}}
+
+        async function deleteServerAsModerator(serverId, addWarn = false){
+            if(!currentUser){alert('⚠️ Необходимо войти в аккаунт');return}
+            const role = await getUserRole(currentUser.uid);
+            if(role !== 'moderator'){alert('❌ У вас нет прав модератора');return}
+            if(!confirm('Вы уверены, что хотите удалить этот сервер?')) return;
+            try{
+                const serverDoc = await db.collection('servers').doc(serverId).get();
+                if(!serverDoc.exists){alert('❌ Сервер не найден');return}
+                const serverData = serverDoc.data();
+                if(addWarn && serverData.addedByUserId){
+                    const result = await addWarnToUser(serverData.addedByUserId);
+                    if(result){
+                        if(result.banned){
+                            alert(`✅ Сервер удалён. Пользователь получил варн (${result.warns}/3) и заблокирован!`);
+                        }else{
+                            alert(`✅ Сервер удалён. Пользователь получил варн (${result.warns}/3).`);
+                        }
+                    }
+                }
+                await db.collection('servers').doc(serverId).delete();
+                if(!addWarn) alert('✅ Сервер удалён');
+                applyFiltersAndRender();
+            }catch(e){alert('❌ Ошибка: '+e.message)}
+        }
+
+        async function toggleServerAbyss(serverId){
+            if(!currentUser){alert('⚠️ Необходимо войти в аккаунт');return}
+            const role = await getUserRole(currentUser.uid);
+            if(role !== 'moderator'){alert('❌ У вас нет прав модератора');return}
+            try{
+                const serverDoc = await db.collection('servers').doc(serverId).get();
+                if(!serverDoc.exists){alert('❌ Сервер не найден');return}
+                const serverData = serverDoc.data();
+                const newAbyssState = !serverData.inAbyss;
+                await db.collection('servers').doc(serverId).update({inAbyss: newAbyssState});
+                alert(newAbyssState ? '✅ Сервер отправлен в бездну' : '✅ Сервер вернули из бездны');
+                applyFiltersAndRender();
+            }catch(e){alert('❌ Ошибка: '+e.message)}
+        }
+
+        async function toggleServerOfficial(serverId){
+            if(!currentUser){alert('⚠️ Необходимо войти в аккаунт');return}
+            const role = await getUserRole(currentUser.uid);
+            if(role !== 'moderator'){alert('❌ У вас нет прав модератора');return}
+            try{
+                const serverDoc = await db.collection('servers').doc(serverId).get();
+                if(!serverDoc.exists){alert('❌ Сервер не найден');return}
+                const serverData = serverDoc.data();
+                const newOfficialState = !serverData.isOfficial;
+                await db.collection('servers').doc(serverId).update({isOfficial: newOfficialState});
+                alert(newOfficialState ? '✅ Сервер помечен как официальный' : '✅ Сервер больше не официальный');
+                applyFiltersAndRender();
+            }catch(e){alert('❌ Ошибка: '+e.message)}
+        }
 
         function showVerifyPage(email,uid){pendingVerifyEmail=email;pendingVerifyUid=uid;verificationCode=generateVerificationCode();document.getElementById('verifySubText').textContent='На вашу почту '+email+' отправлен 6-значный код. Введите его ниже.';document.getElementById('verifyError').textContent='';document.getElementById('verifySuccess').textContent='';document.getElementById('verifyCode').value='';showPage('verify');sendVerificationEmail(email,verificationCode).then(s=>{if(!s)document.getElementById('verifyError').textContent='❌ Не удалось отправить письмо. Попробуйте повторно.'})}
 
@@ -659,7 +723,7 @@
             }finally{this.disabled=false;this.textContent='Зарегистрироваться'}
         });
 
-        document.getElementById('loginBtn').addEventListener('click',async function(){const email=document.getElementById('loginEmail').value.trim(),pass=document.getElementById('loginPassword').value,err=document.getElementById('loginError');err.textContent='';if(!email||!pass){err.textContent='❌ Заполните все поля';return}this.disabled=true;this.textContent='⏳ Вход...';try{const user=await auth.signInWithEmailAndPassword(email,pass);if(!await isUserVerified(user.user.uid)){await auth.signOut();err.textContent='❌ Почта не подтверждена. Проверьте почту или запросите код повторно.';showVerifyPage(email,user.user.uid);this.disabled=false;this.textContent='Войти';return}updateUIForUser(user.user);setTimeout(()=>showPage('main'),500)}catch(e){let msg='❌ Ошибка входа: ';switch(e.code){case'auth/user-not-found':msg+='Пользователь не найден';break;case'auth/wrong-password':msg+='Неверный пароль';break;case'auth/invalid-email':msg+='Некорректный email';break;case'auth/user-disabled':msg+='Аккаунт заблокирован';break;default:msg+=e.message}err.textContent=msg}finally{this.disabled=false;this.textContent='Войти'}});
+        document.getElementById('loginBtn').addEventListener('click',async function(){const email=document.getElementById('loginEmail').value.trim(),pass=document.getElementById('loginPassword').value,err=document.getElementById('loginError');err.textContent='';if(!email||!pass){err.textContent='❌ Заполните все поля';return}this.disabled=true;this.textContent='⏳ Вход...';try{const user=await auth.signInWithEmailAndPassword(email,pass);if(await isUserBanned(user.user.uid)){await auth.signOut();err.textContent='❌ Ваш аккаунт заблокирован за нарушения (3+ варна). Обратитесь в поддержку.';this.disabled=false;this.textContent='Войти';return}if(!await isUserVerified(user.user.uid)){await auth.signOut();err.textContent='❌ Почта не подтверждена. Проверьте почту или запросите код повторно.';showVerifyPage(email,user.user.uid);this.disabled=false;this.textContent='Войти';return}updateUIForUser(user.user);setTimeout(()=>showPage('main'),500)}catch(e){let msg='❌ Ошибка входа: ';switch(e.code){case'auth/user-not-found':msg+='Пользователь не найден';break;case'auth/wrong-password':msg+='Неверный пароль';break;case'auth/invalid-email':msg+='Некорректный email';break;case'auth/user-disabled':msg+='Аккаунт заблокирован';break;default:msg+=e.message}err.textContent=msg}finally{this.disabled=false;this.textContent='Войти'}});
 
         function logoutUser(){auth.signOut().then(()=>{updateUIForUser(null);showPage('main')})}
 
@@ -740,7 +804,7 @@
         function renderTags(){tagsContainer.innerHTML=tags.map(t=>'<span class="tag-item">'+t+'<span class="remove-tag" data-tag="'+t+'"><i class="fas fa-times"></i></span></span>').join('');document.querySelectorAll('#tagsContainer .remove-tag').forEach(el=>{el.addEventListener('click',function(){const t=this.dataset.tag;tags=tags.filter(tt=>tt!==t);renderTags();updateTagCounter()})});updateTagCounter()}
         function updateTagCounter(){tagCounter.textContent=tags.length+'/'+MAX_TAGS+' тегов';tagCounter.className='char-counter'+(tags.length>=MAX_TAGS?' over':'')}
 
-        addTagBtn.addEventListener('click',function(){const val=tagInput.value.trim();if(!val){alert('Введите тег');return}if(val.length<2){alert('Тег должен быть минимум 2 символа');return}if(val.length>30){alert('Тег не может быть длиннее 30 символов');return}if(tags.includes(val)){alert('Такой тег уже добавлен');return}if(tags.length>=MAX_TAGS){alert('Максимум '+MAX_TAGS+' тегов');return}tags.push(val);renderTags();tagInput.value=''});
+        addTagBtn.addEventListener('click',function(){const val=tagInput.value.trim();if(!val){alert('Введите тег');return}if(val.length<2){alert('Тег должен быть минимум 2 символа');return}if(val.length>30){alert('Тег не может быть длиннее 30 символов');return}if(tags.includes(val)){alert('Такой тег уже добавлен');return}if(tags.length>=MAX_TAGS){alert('Максимум '+MAX_TAGS+' тегов');return}tags.push(val);renderTags();tagInput.value=''};
         tagInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addTagBtn.click()}});
 
         function resizeAndConvertToBase64(file,mw=200,mh=200){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=function(e){const img=new Image();img.onload=function(){let w=img.width,h=img.height;if(w>mw||h>mh){const r=Math.min(mw/w,mh/h);w=Math.round(w*r);h=Math.round(h*r)}const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);resolve(c.toDataURL('image/jpeg',0.8))};img.onerror=reject;img.src=e.target.result};reader.onerror=reject;reader.readAsDataURL(file)})}
@@ -846,8 +910,8 @@
                 console.log(`⚠️ Сервер ${server.address}:${server.port} не ответил валидным статусом, пропускаем обновление`);
                 return;
             }
-            const online=(status&&status.online)?(status.players?status.players.online:0):0;
-            let history=server.history||{};
+            const online=(status&&status.online===true) ? (status.players?status.players.online:0) : 0;
+            let history=server.history&&typeof server.history==='object'?server.history:{};
             const now=new Date(),cutoff=new Date(now.getTime()-48*60*60*1000);
             for(let key in history){const d=new Date(key);if(d<cutoff)delete history[key]}
             const hourKey=new Date(now.getFullYear(),now.getMonth(),now.getDate(),now.getHours()).toISOString();
@@ -930,10 +994,6 @@
                         telegram: data.telegram || null,
                         donate: data.donate || null,
                         isOfficial: data.isOfficial || false,
-                        inAbyss: data.inAbyss || false,
-                        telegram: data.telegram || null,
-                        donate: data.donate || null,
-                        isOfficial: data.isOfficial || false,
                         inAbyss: data.inAbyss || false
                     });
                 });
@@ -953,7 +1013,7 @@
             const search = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
             let filtered = servers.filter(s => {
                 const nameMatch = s.name && s.name.toLowerCase().includes(search);
-                const versionMatch = activeVersionFilter === 'all' || (s.version && s.version === activeVersionFilter);
+                const versionMatch = activeVersionFilter === 'all' || (s.version && s.version.includes(activeVersionFilter));
                 const notInAbyss = !s.inAbyss;
                 return nameMatch && versionMatch && notInAbyss;
             });
@@ -987,10 +1047,93 @@
             renderPagination(totalPages);
         }
 
-        function renderCards(items){if(!items||items.length===0){serversContainer.innerHTML='<div style="text-align:center;padding:40px 0;color:var(--text-muted);"><i class="fas fa-server" style="font-size:32px;display:block;margin-bottom:12px;"></i>Нет серверов</div>';return}let html='';items.forEach(server=>{const status=server.statusData,online=status&&status.online===true,playersOnline=status&&status.players?status.players.online:0,playersMax=status&&status.players?status.players.max:0,versionDisplay=status&&status.version?status.version:(server.version||'—'),description=server.description||'',tags=server.tags||[],votes=server.votes||0;let iconHtml='<i class="fas fa-server"></i>';if(server.avatarUrl)iconHtml='<img src="'+server.avatarUrl+'" alt="avatar" />';else if(status&&status.icon){let src=status.icon;if(!src.startsWith('data:image'))src='data:image/png;base64,'+src;iconHtml='<img src="'+src+'" alt="icon" />'}const timeText=online?timeAgo(server.createdAt):timeAgo(server.statusUpdatedAt),timeLabel=online?'Открылся':'Закрылся',statusText=online?'Онлайн':'Офлайн',dotClass=online?'':'offline',currentDir=getVoteDirection(server.id),upActive=currentDir===1?'vote-arrow-active':'vote-arrow',downActive=currentDir===-1?'vote-arrow-active':'vote-arrow',onlineIconSvg='<svg class="online-icon-svg '+(online?'':'offline')+'" viewBox="0 0 24 24"><circle class="head" cx="12" cy="8" r="4" /><path class="body" d="M20 21c0-4-4-6-8-6s-8 2-8 6" /><path class="body" d="M4 21c0-4 4-6 8-6s8 2 8 6" stroke-width="1.8" /></svg>',progressClass=online?'':'offline';const officialBadge=server.isOfficial?'<i class="fas fa-check-circle" style="color:#1da1f2;font-size:13px;margin-left:4px;" title="Официальный сервер"></i>':'';html+='<div class="server-row" data-id="'+server.id+'"><div class="server-left-side"><div class="server-top-row"><div class="server-icon">'+iconHtml+'</div><div class="server-main-info"><div class="server-title-line"><div class="flag-ru"></div><a class="server-title" onclick="openStats(\''+server.id+'\')">'+(server.name||server.address)+'</a>'+officialBadge+'<span class="server-status-dot '+dotClass+'"></span><span style="font-size:11px;color:var(--text-muted);">'+statusText+'</span></div><div class="server-meta-line"><span>IP: <strong class="meta-ip" onclick="copyToClipboard(\''+server.address+':'+server.port+'\')">'+server.address+':'+server.port+'</strong></span><span>версия: <span class="meta-highlight">'+versionDisplay+'</span></span><span class="meta-time">'+timeLabel+' '+timeText+'</span></div></div></div>'+(description?'<div class="server-description">'+description+'</div>':'')+(tags.length?'<div class="server-tags-line">'+tags.map(t=>'<span>'+t+'</span>').join('')+'</div>':'')+'</div><div class="server-actions"><div class="vote-block"><span class="'+upActive+'" onclick="voteServer(\''+server.id+'\',1)"><i class="fas fa-chevron-up"></i></span><span class="vote-count">'+votes+'</span><span class="'+downActive+'" onclick="voteServer(\''+server.id+'\',-1)"><i class="fas fa-chevron-down"></i></span></div></div><div class="online-wrapper">'+onlineIconSvg+'<div class="online-progress-bar '+progressClass+'">'+(online?playersOnline+' из '+playersMax:'Офлайн')+'</div></div></div>'});serversContainer.innerHTML=html}
-        function renderPagination(totalPages){if(totalPages<=1){paginationEl.innerHTML='';return}let html='';for(let i=1;i<=totalPages;i++){const active=i===currentPage?'active':'';html+='<a class="page-link '+active+'" data-page="'+i+'">'+i+'</a>'}paginationEl.innerHTML=html;paginationEl.querySelectorAll('.page-link').forEach(el=>{el.addEventListener('click',function(e){e.preventDefault();currentPage=parseInt(this.dataset.page);applyFiltersAndRender()})})}
-
-        function openStats(id){currentStatsServerId=id;showPage('stats')}
+        function renderCards(items){
+            if(!items||items.length===0){
+                serversContainer.innerHTML='<div style="text-align:center;padding:40px 0;color:var(--text-muted);"><i class="fas fa-server" style="font-size:32px;display:block;margin-bottom:12px;"></i>Нет серверов</div>';
+                return;
+            }
+            let html='';
+            items.forEach(server=>{
+                const status=server.statusData;
+                const online=status&&status.online===true;
+                const playersOnline=status&&status.players?status.players.online:0;
+                const playersMax=status&&status.players?status.players.max:0;
+                const versionDisplay=status&&status.version?status.version:(server.version||'—');
+                const description=server.description||'';
+                const tags=server.tags||[];
+                const votes=server.votes||0;
+                
+                let iconHtml='<i class="fas fa-server"></i>';
+                if(server.avatarUrl){
+                    iconHtml='<img src="'+server.avatarUrl+'" alt="avatar" />';
+                }else if(status&&status.icon){
+                    let src=status.icon;
+                    if(!src.startsWith('data:image')) src='data:image/png;base64,'+src;
+                    iconHtml='<img src="'+src+'" alt="icon" />';
+                }
+                
+                const timeText=online?timeAgo(server.createdAt):timeAgo(server.statusUpdatedAt);
+                const timeLabel=online?'Открылся':'Закрылся';
+                const statusText=online?'Онлайн':'Офлайн';
+                const dotClass=online?'':'offline';
+                const currentDir=getVoteDirection(server.id);
+                const upActive=currentDir===1?'vote-arrow-active':'vote-arrow';
+                const downActive=currentDir===-1?'vote-arrow-active':'vote-arrow';
+                const onlineIconSvg='<svg class="online-icon-svg '+(online?'':'offline')+'" viewBox="0 0 24 24"><circle class="head" cx="12" cy="8" r="4" /><path class="body" d="M20 21c0-4-4-6-8-6s-8 2-8 6" /><path class="body" d="M4 21c0-4 4-6 8-6s8 2 8 6" stroke-width="1.8" /></svg>';
+                const progressClass=online?'':'offline';
+                const officialBadge=server.isOfficial?'<i class="fas fa-check-circle" style="color:#1da1f2;font-size:13px;margin-left:4px;" title="Официальный сервер"></i>':'';
+                
+                html+='<div class="server-row" data-id="'+server.id+'">';
+                html+='<div class="server-left-side">';
+                html+='<div class="server-top-row">';
+                html+='<div class="server-icon">'+iconHtml+'</div>';
+                html+='<div class="server-main-info">';
+                html+='<div class="server-title-line">';
+                html+='<div class="flag-ru"></div>';
+                html+='<a class="server-title" onclick="openStats(\''+server.id+'\')">'+(server.name||server.address)+officialBadge+'</a>';
+                html+='<span class="server-status-dot '+dotClass+'"></span>';
+                html+='<span style="font-size:11px;color:var(--text-muted);">'+statusText+'</span>';
+                html+='</div>';
+                html+='<div class="server-meta-line">';
+                html+='<span>IP: <strong class="meta-ip" onclick="copyToClipboard(\''+server.address+':'+server.port+'\')">'+server.address+':'+server.port+'</strong></span>';
+                html+='<span>версия: <span class="meta-highlight">'+versionDisplay+'</span></span>';
+                html+='<span class="meta-time">'+timeLabel+' '+timeText+'</span>';
+                html+='</div>';
+                html+='</div>';
+                html+='</div>';
+                if(description)html+='<div class="server-description">'+description+'</div>';
+                if(tags.length)html+='<div class="server-tags-line">'+tags.map(t=>'<span>'+t+'</span>').join('')+'</div>';
+                html+='<div class="server-actions">';
+                html+='<div class="vote-block">';
+                html+='<span class="'+upActive+'" onclick="voteServer(\''+server.id+'\',1)">▲</span>';
+                html+='<span class="vote-count">'+votes+'</span>';
+                html+='<span class="'+downActive+'" onclick="voteServer(\''+server.id+'\',-1)">▼</span>';
+                html+='</div>';
+                html+='</div>';
+                html+='<div class="mod-controls" id="mod-'+server.id+'" style="display:none;">';
+                html+='<button class="mod-btn mod-btn-delete" onclick="deleteServerAsModerator(\''+server.id+'\',true)" title="Удалить сервер и выдать варн владельцу">🗑️ Удалить + Варн</button>';
+                html+='<button class="mod-btn mod-btn-abyss" onclick="toggleServerAbyss(\''+server.id+'\')" title="Отправить в бездну (скрыть из списка)">🕳️ '+(server.inAbyss?'Из бездны':'В бездну')+'</button>';
+                html+='<button class="mod-btn mod-btn-official" onclick="toggleServerOfficial(\''+server.id+'\')" title="Пометить как официальный сервер">✓ '+(server.isOfficial?'Убрать галочку':'Сделать офиц.')+'</button>';
+                html+='</div>';
+                html+='</div>';
+                html+='<div class="online-wrapper">';
+                html+=onlineIconSvg;
+                html+='<div class="online-progress-bar '+progressClass+'">'+(online?playersOnline+' из '+playersMax:'Офлайн')+'</div>';
+                html+='</div>';
+                html+='</div>';
+            });
+            serversContainer.innerHTML=html;
+            
+            if(currentUser){
+                getUserRole(currentUser.uid).then(role=>{
+                    if(role==='moderator'){
+                        document.querySelectorAll('.mod-controls').forEach(el=>{
+                            el.style.display='flex';
+                        });
+                    }
+                });
+            }
+        }
         
         function loadServerStats(id){
             if(statsUnsubscribe){statsUnsubscribe();statsUnsubscribe=null}
@@ -1022,8 +1165,72 @@
             });
         }
         
-        function drawChart(history){const canvas=document.getElementById('statsChart'),ctx=canvas.getContext('2d');canvas.width=canvas.parentElement.clientWidth||800;canvas.height=200;const w=canvas.width,h=canvas.height,p={top:20,right:20,bottom:30,left:30},cw=w-p.left-p.right,ch=h-p.top-p.bottom;ctx.clearRect(0,0,w,h);const now=new Date(),hours=[],values=[];for(let i=23;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth(),now.getDate(),now.getHours()-i),key=d.toISOString();hours.push(d);values.push(history[key]!==undefined?history[key]:null)}if(values.every(v=>v===null)){ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text-muted').trim()||'#888';ctx.font='14px Tahoma';ctx.textAlign='center';ctx.fillText('Нет данных за последние 24 часа',w/2,h/2);return}const data=values.map(v=>v!==null?v:0),max=Math.max(...data,1);const scaleY=(val)=>p.top+ch-(val/max)*ch;ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--chart-grid').trim()||'#ddd';ctx.lineWidth=.5;for(let i=0;i<=4;i++){const y=p.top+(i/4)*ch;ctx.beginPath();ctx.moveTo(p.left,y);ctx.lineTo(w-p.right,y);ctx.stroke();const val=Math.round(max-(i/4)*max);ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text-muted').trim()||'#888';ctx.font='10px Tahoma';ctx.textAlign='right';ctx.fillText(val,p.left-5,y+3)}ctx.beginPath();ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--chart-line').trim()||'#28a745';ctx.lineWidth=2;for(let i=0;i<data.length;i++){const x=p.left+(i/(data.length-1))*cw,y=scaleY(data[i]);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();const lastX=p.left+cw;ctx.lineTo(lastX,p.top+ch);ctx.lineTo(p.left,p.top+ch);ctx.closePath();ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--chart-fill').trim()||'rgba(40,167,69,0.2)';ctx.fill();ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text-muted').trim()||'#888';ctx.font='10px Tahoma';ctx.textAlign='center';for(let i=0;i<hours.length;i+=4){const x=p.left+(i/(data.length-1))*cw,label=hours[i].getHours()+':00';ctx.fillText(label,x,h-5)}}
-
+        function drawChart(history){
+            const canvas=document.getElementById('statsChart');
+            const ctx=canvas.getContext('2d');
+            canvas.width=canvas.parentElement.clientWidth||800;
+            canvas.height=200;
+            const w=canvas.width,h=canvas.height;
+            const p={top:20,right:20,bottom:30,left:30};
+            const cw=w-p.left-p.right,ch=h-p.top-p.bottom;
+            ctx.clearRect(0,0,w,h);
+            const now=new Date(),hours=[],values=[];
+            for(let i=23;i>=0;i--){
+                const d=new Date(now.getFullYear(),now.getMonth(),now.getDate(),now.getHours()-i);
+                const key=d.toISOString();
+                hours.push(d);
+                values.push(history[key]!==undefined?history[key]:null);
+            }
+            if(values.every(v=>v===null)){
+                ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text-muted').trim()||'#888';
+                ctx.font='14px Tahoma';
+                ctx.textAlign='center';
+                ctx.fillText('Нет данных за последние 24 часа',w/2,h/2);
+                return;
+            }
+            const data=values.map(v=>v!==null?v:0);
+            const max=Math.max(...data,1);
+            const scaleY=(val)=>p.top+ch-(val/max)*ch;
+            ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--chart-grid').trim()||'#ddd';
+            ctx.lineWidth=.5;
+            for(let i=0;i<=4;i++){
+                const y=p.top+(i/4)*ch;
+                ctx.beginPath();
+                ctx.moveTo(p.left,y);
+                ctx.lineTo(w-p.right,y);
+                ctx.stroke();
+                const val=Math.round(max-(i/4)*max);
+                ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text-muted').trim()||'#888';
+                ctx.font='10px Tahoma';
+                ctx.textAlign='right';
+                ctx.fillText(val,p.left-5,y+3);
+            }
+            ctx.beginPath();
+            ctx.strokeStyle=getComputedStyle(document.body).getPropertyValue('--chart-line').trim()||'#28a745';
+            ctx.lineWidth=2;
+            for(let i=0;i<data.length;i++){
+                const x=p.left+(i/(data.length-1))*cw;
+                const y=scaleY(data[i]);
+                if(i===0)ctx.moveTo(x,y);
+                else ctx.lineTo(x,y);
+            }
+            ctx.stroke();
+            const lastX=p.left+cw;
+            ctx.lineTo(lastX,p.top+ch);
+            ctx.lineTo(p.left,p.top+ch);
+            ctx.closePath();
+            ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--chart-fill').trim()||'rgba(40,167,69,0.2)';
+            ctx.fill();
+            ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--text-muted').trim()||'#888';
+            ctx.font='10px Tahoma';
+            ctx.textAlign='center';
+            for(let i=0;i<hours.length;i+=4){
+                const x=p.left+(i/(hours.length-1))*cw;
+                const h=hours[i].getHours();
+                ctx.fillText(h+':00',x,canvas.height-10);
+            }
+        }
+        
         async function voteServer(id,delta){if(!currentUser){alert('⚠️ Для голосования необходимо войти в аккаунт!');showPage('login');return}if(!await isUserVerified(currentUser.uid)){alert('⚠️ Ваш email не подтверждён. Проверьте почту и подтвердите аккаунт.');showVerifyPage(currentUser.email,currentUser.uid);return}if(votingCooldown)return;votingCooldown=true;setTimeout(()=>{votingCooldown=false},500);const server=servers.find(s=>s.id===id);if(!server)return;const currentDir=getVoteDirection(id);let newDir=0;if(currentDir===delta)newDir=0;else if(currentDir===-delta)newDir=delta;else newDir=delta;const change=newDir-currentDir;if(change===0)return;const newVotes=(server.votes||0)+change;try{await db.collection('servers').doc(id).update({votes:newVotes});server.votes=newVotes;setVoteDirection(id,newDir);applyFiltersAndRender()}catch(e){alert('Не удалось проголосовать.')}}
 
         // ----- МОИ СЕРВЕРА (БЕЗ ИЗМЕНЕНИЙ) -----
@@ -1093,8 +1300,9 @@
                 const votes = server.votes || 0;
                 
                 let iconHtml = '<i class="fas fa-server"></i>';
-                if(server.avatarUrl) iconHtml = '<img src="'+server.avatarUrl+'" alt="avatar" />';
-                else if(status && status.icon){
+                if(server.avatarUrl){
+                    iconHtml = '<img src="'+server.avatarUrl+'" alt="avatar" />';
+                }else if(status&&status.icon){
                     let src = status.icon;
                     if(!src.startsWith('data:image')) src = 'data:image/png;base64,'+src;
                     iconHtml = '<img src="'+src+'" alt="icon" />';
@@ -1104,69 +1312,63 @@
                 const timeLabel = online ? 'Открылся' : 'Закрылся';
                 const statusText = online ? 'Онлайн' : 'Офлайн';
                 const dotClass = online ? '' : 'offline';
+                const currentDir = getVoteDirection(server.id);
+                const upActive = currentDir===1?'vote-arrow-active':'vote-arrow';
+                const downActive = currentDir===-1?'vote-arrow-active':'vote-arrow';
                 const onlineIconSvg = '<svg class="online-icon-svg '+(online?'':'offline')+'" viewBox="0 0 24 24"><circle class="head" cx="12" cy="8" r="4" /><path class="body" d="M20 21c0-4-4-6-8-6s-8 2-8 6" /><path class="body" d="M4 21c0-4 4-6 8-6s8 2 8 6" stroke-width="1.8" /></svg>';
                 const progressClass = online ? '' : 'offline';
+                const officialBadge = server.isOfficial?'<i class="fas fa-check-circle" style="color:#1da1f2;font-size:13px;margin-left:4px;" title="Официальный сервер"></i>':'';
                 
-                const now = Date.now();
-                const lastBoost = server.lastBoost ? server.lastBoost.seconds * 1000 : 0;
-                const hoursSinceBoost = (now - lastBoost) / (1000 * 60 * 60);
-                const boostDisabled = !online || hoursSinceBoost < 24;
-                
-                let boostText = 'Поднять ⬆️';
-                let boostTitle = '';
-                if(!online){
-                    boostText = '❌ Оффлайн';
-                    boostTitle = 'Сервер должен быть онлайн для поднятия';
-                } else if(hoursSinceBoost < 24){
-                    const remaining = Math.ceil(24 - hoursSinceBoost);
-                    boostText = `⏳ ${remaining}ч`;
-                    boostTitle = `Поднятие доступно через ${remaining} часов`;
-                } else {
-                    boostTitle = 'Поднять сервер наверх в списке';
-                }
-                
-                const boostedClass = (lastBoost > 0 && hoursSinceBoost < 24) ? 'boosted' : '';
-                
-                html += '<div class="server-row '+boostedClass+'" data-id="'+server.id+'">' +
-                    '<div class="server-left-side">' +
-                        '<div class="server-top-row">' +
-                            '<div class="server-icon">'+iconHtml+'</div>' +
-                            '<div class="server-main-info">' +
-                                '<div class="server-title-line">' +
-                                    '<div class="flag-ru"></div>' +
-                                    '<a class="server-title" onclick="openStats(\''+server.id+'\')">'+(server.name||server.address)+'</a>' +
-                                    '<span class="server-status-dot '+dotClass+'"></span>' +
-                                    '<span style="font-size:11px;color:var(--text-muted);">'+statusText+'</span>' +
-                                    (lastBoost > 0 && hoursSinceBoost < 24 ? '<span class="boost-badge">⭐ ПОДНЯТ</span>' : '') +
-                                '</div>' +
-                                '<div class="server-meta-line">' +
-                                    '<span>IP: <strong class="meta-ip" onclick="copyToClipboard(\''+server.address+':'+server.port+'\')">'+server.address+':'+server.port+'</strong></span>' +
-                                    '<span>версия: <span class="meta-highlight">'+versionDisplay+'</span></span>' +
-                                    '<span class="meta-time">'+timeLabel+' '+timeText+'</span>' +
-                                '</div>' +
-                            '</div>' +
-                        '</div>' +
-                        (description ? '<div class="server-description">'+description+'</div>' : '') +
-                        (tags.length ? '<div class="server-tags-line">'+tags.map(t=>'<span>'+t+'</span>').join('')+'</div>' : '') +
-                    '</div>' +
-                    '<div class="server-actions-right">' +
-                        '<div class="vote-block">' +
-                            '<span class="vote-count">'+votes+' ⭐</span>' +
-                        '</div>' +
-                        '<button class="boost-btn '+(boostDisabled ? 'used' : '')+'" '+
-                            'onclick="boostServer(\''+server.id+'\')" '+
-                            (boostDisabled ? 'disabled title="'+boostTitle+'"' : 'title="'+boostTitle+'"') + '>' +
-                            boostText +
-                        '</button>' +
-                    '</div>' +
-                    '<div class="online-wrapper">' +
-                        onlineIconSvg +
-                        '<div class="online-progress-bar '+progressClass+'">'+(online?playersOnline+' из '+playersMax:'Офлайн')+'</div>' +
-                    '</div>' +
-                '</div>';
+                html += '<div class="server-row" data-id="'+server.id+'">';
+                html += '<div class="server-left-side">';
+                html += '<div class="server-top-row">';
+                html += '<div class="server-icon">'+iconHtml+'</div>';
+                html += '<div class="server-main-info">';
+                html += '<div class="server-title-line">';
+                html += '<div class="flag-ru"></div>';
+                html += '<a class="server-title" onclick="openStats(\''+server.id+'\')">'+(server.name||server.address)+officialBadge+'</a>';
+                html += '<span class="server-status-dot '+dotClass+'"></span>';
+                html += '<span style="font-size:11px;color:var(--text-muted);">'+statusText+'</span>';
+                html += '</div>';
+                html += '<div class="server-meta-line">';
+                html += '<span>IP: <strong class="meta-ip" onclick="copyToClipboard(\''+server.address+':'+server.port+'\')">'+server.address+':'+server.port+'</strong></span>';
+                html += '<span>версия: <span class="meta-highlight">'+versionDisplay+'</span></span>';
+                html += '<span class="meta-time">'+timeLabel+' '+timeText+'</span>';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+                if(description)html+='<div class="server-description">'+description+'</div>';
+                if(tags.length)html+='<div class="server-tags-line">'+tags.map(t=>'<span>'+t+'</span>').join('')+'</div>';
+                html+='<div class="server-actions">';
+                html+='<div class="vote-block">';
+                html+='<span class="'+upActive+'" onclick="voteServer(\''+server.id+'\',1)">▲</span>';
+                html+='<span class="vote-count">'+votes+'</span>';
+                html+='<span class="'+downActive+'" onclick="voteServer(\''+server.id+'\',-1)">▼</span>';
+                html+='</div>';
+                html+='</div>';
+                html+='<div class="mod-controls" id="mod-'+server.id+'" style="display:none;">';
+                html+='<button class="mod-btn mod-btn-delete" onclick="deleteServerAsModerator(\''+server.id+'\',true)" title="Удалить сервер и выдать варн владельцу">🗑️ Удалить + Варн</button>';
+                html+='<button class="mod-btn mod-btn-abyss" onclick="toggleServerAbyss(\''+server.id+'\')" title="Отправить в бездну (скрыть из списка)">🕳️ '+(server.inAbyss?'Из бездны':'В бездну')+'</button>';
+                html+='<button class="mod-btn mod-btn-official" onclick="toggleServerOfficial(\''+server.id+'\')" title="Пометить как официальный сервер">✓ '+(server.isOfficial?'Убрать галочку':'Сделать офиц.')+'</button>';
+                html+='</div>';
+                html+='</div>';
+                html+='<div class="online-wrapper">';
+                html+=onlineIconSvg;
+                html+='<div class="online-progress-bar '+progressClass+'">'+(online?playersOnline+' из '+playersMax:'Офлайн')+'</div>';
+                html+='</div>';
+                html+='</div>';
             });
-            
             container.innerHTML = html;
+            
+            if(currentUser){
+                getUserRole(currentUser.uid).then(role=>{
+                    if(role==='moderator'){
+                        document.querySelectorAll('.mod-controls').forEach(el=>{
+                            el.style.display='flex';
+                        });
+                    }
+                });
+            }
         }
         
         async function boostServer(serverId){
