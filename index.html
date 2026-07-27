@@ -201,7 +201,7 @@
         .boost-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
         .boost-btn.used{background:var(--text-muted)}
         .boost-info{font-size:11px;color:var(--text-muted);white-space:nowrap}
-        .side-ad{position:fixed;right:20px;top:130px;width:240px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:20px 16px;text-align:center;box-shadow:0 4px 12px var(--shadow-color);z-index:100;transition:background .3s,border .3s}
+        .side-ad{position:fixed;right:20px;top:130px;width:240px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:20px 16px;text-align:center;box-shadow:0 4px 12px var(--shadow-color);z-index:100;transition:background .3s,border .3s;display:block}
         .side-ad .side-ad-close{position:absolute;top:4px;right:6px;cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;background:0;border:0;padding:2px}
         .side-ad .side-ad-close:hover{color:var(--danger-color)}
         .side-ad .side-ad-title{font-size:17px;font-weight:bold;color:var(--text-link);margin-bottom:10px;line-height:1.3}
@@ -665,7 +665,7 @@
                 <a class="back-link" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> На главную</a>
                 <h1>Контакты</h1>
                 <p>Свяжитесь с нами по любым вопросам:</p>
-                <ul><li><strong>Email:</strong> support@krezzmonitor.ru</li><li><strong>Telegram:</strong> @KreZzmonitorSupport_bot</li><li><strong>Discord:</strong> https://discord.gg/krezzmonitor</li></ul>
+                <ul><li><strong>Email:</strong> support@krezzmonitor.ru</li><li><strong>Telegram:</strong> @krezzmonitor</li><li><strong>Discord:</strong> https://discord.gg/krezzmonitor</li></ul>
                 <p>Мы стараемся отвечать в течение 24 часов в рабочие дни.</p>
             </div>
         </div>
@@ -699,7 +699,7 @@
     </div>
     <footer>
         <div class="footer-container">
-            <div>&copy; KreZzMonitor. Все права защищены. Версия 1.1.3.0</div>
+            <div>&copy; KreZzMonitor. Все права защищены. Версия 1.1.3.1</div>
             <div class="footer-links">
                 <a onclick="showPage('contacts')">Контакты</a>
                 <a href="https://discord.gg/hTdb4ZyBzS" target="_blank"><i class="fab fa-discord"></i> Discord</a>
@@ -1111,11 +1111,25 @@
         // ----- РЕКЛАМА (закрытие) -----
         const sideAd = document.getElementById('sideAd');
         const sideAdClose = document.getElementById('sideAdClose');
-        if (localStorage.getItem('sideAdClosed') === '1' && sideAd) sideAd.classList.add('hidden');
-        if (sideAdClose) sideAdClose.addEventListener('click', () => {
+        // Если пользователь ранее закрыл рекламу, скрываем её, иначе показываем принудительно
+        if (localStorage.getItem('sideAdClosed') === '1' && sideAd) {
             sideAd.classList.add('hidden');
-            localStorage.setItem('sideAdClosed', '1');
-        });
+            sideAd.style.display = 'none';
+        } else {
+            if (sideAd) {
+                sideAd.classList.remove('hidden');
+                sideAd.style.display = 'block';
+            }
+        }
+        if (sideAdClose) {
+            sideAdClose.addEventListener('click', () => {
+                if (sideAd) {
+                    sideAd.classList.add('hidden');
+                    sideAd.style.display = 'none';
+                    localStorage.setItem('sideAdClosed', '1');
+                }
+            });
+        }
 
         // ----- КАПЧА -----
         let correctAnswer = 0;
