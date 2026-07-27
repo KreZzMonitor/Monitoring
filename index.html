@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" >
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();
+       for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+       k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+       ym(110988110, "init", {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/110988110" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
     <meta charset="UTF-8">
     <meta name="yandex-verification" content="562347cf38a747b0" />
     <meta name="google-site-verification" content="Ci1xjcQI1VrrzrwTn-t_tX298PWylmQNJQ7PFGYjodU" />
@@ -202,11 +214,23 @@
         .boost-info{font-size:11px;color:var(--text-muted);white-space:nowrap}
         @media(max-width:768px){header{padding:0 15px;height:auto;flex-wrap:wrap;gap:5px;padding-top:8px;padding-bottom:8px}nav a{padding:0 8px;font-size:11px}#authButtons{gap:4px}.server-row{flex-wrap:wrap;gap:10px}.online-wrapper{margin-left:0;width:100%;justify-content:flex-start}.online-progress-bar{flex:1;max-width:200px}.server-left-side{width:100%}.add-form-page .form-row{grid-template-columns:1fr}.footer-container{flex-direction:column;gap:10px;text-align:center}.footer-links a{margin:0 8px}.stats-page .stats-detail{grid-template-columns:1fr}.auth-page,.verify-page{padding:30px 20px}.my-servers-page .server-actions-right{flex-direction:column;align-items:stretch;width:100%}.boost-btn{width:100%;text-align:center}}
         @media(max-width:480px){.server-title{font-size:12px}.server-meta-line{font-size:10px}.server-actions .vote-block{min-width:30px;padding:2px 6px}.server-actions .vote-block .vote-count{font-size:13px}.add-form-page{padding:16px}}
+        .side-ad{position:fixed;left:20px;top:130px;width:150px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:14px 12px;text-align:center;box-shadow:0 4px 12px var(--shadow-color);z-index:100;transition:background .3s,border .3s}
+        .side-ad .side-ad-close{position:absolute;top:4px;right:6px;cursor:pointer;color:var(--text-muted);font-size:14px;line-height:1;background:0;border:0;padding:2px}
+        .side-ad .side-ad-close:hover{color:var(--danger-color)}
+        .side-ad .side-ad-title{font-size:13px;font-weight:bold;color:var(--text-link);margin-bottom:6px;line-height:1.3}
+        .side-ad .side-ad-text{font-size:11px;color:var(--text-secondary);line-height:1.4}
+        .side-ad.hidden{display:none}
+        @media(max-width:1400px){.side-ad{display:none}}
     </style>
 </head>
 <body>
     <div id="copyNotification">Скопировано!</div>
     <div id="splashScreen"><div class="spinner"></div><h2>Проверка соединения...</h2><p>Защита от DDoS</p></div>
+    <div class="side-ad" id="sideAd">
+        <button class="side-ad-close" id="sideAdClose" title="Закрыть">✕</button>
+        <div class="side-ad-title">Ноготочки у Насти</div>
+        <div class="side-ad-text">Лучшие ногти в мире</div>
+    </div>
     <header>
         <a class="header-left" onclick="showPage('main')"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="2" fill="none"/></svg>KreZzMonitor</a>
         <nav id="mainNav">
@@ -481,6 +505,11 @@
                 <p><strong>3. Голосование</strong><br>3.1. Голосовать могут только зарегистрированные пользователи (в будущем).<br>3.2. Запрещены накрутки голосов с использованием ботов или прокси.</p>
                 <p><strong>4. Ответственность</strong><br>4.1. Администрация не несёт ответственности за контент серверов, добавленных пользователями.<br>4.2. Пользователь самостоятельно отвечает за сохранность своих данных.</p>
                 <p><strong>5. Изменения</strong><br>5.1. Правила могут быть изменены в любое время. Изменения вступают в силу с момента публикации.</p>
+                <h2>Дополнительные правила</h2>
+                <p><strong>1. Добавление сервера</strong><br>1.1. Вы удостоверяетесь, что в описании и MOTD вашего сервера нет запрещённых вещей.<br>Наказание: снос сервера и варн на аккаунт.<br>1.2. Вы соглашаетесь с тем, что вы можете остаться в бездне.</p>
+                <p><strong>2. Отношение к администрации</strong><br>2.1. Оскорбление администрации (в любом виде, даже в описании сервера и MOTD).<br>Наказание: снос аккаунта и запись в историю почты.<br>2.2. Администрация может снести ваш аккаунт по корректной причине, но вы можете обратиться в поддержку, и вам могут помочь.<br>Наказание для администрации: месяц без еды и 3 дня без воды в подвале.</p>
+                <p><strong>3. Аккаунты</strong><br>3.1. При создании аккаунта вы должны указать приличный ник и аватарку.<br>Наказание при нарушении: снос аккаунта (если вас заметят модераторы).</p>
+                <p><strong>4. Очень важный пункт</strong><br>4.1. Администрация может менять правила когда угодно, но мы постараемся вас уведомить на почту и на аккаунт.</p>
             </div>
         </div>
         <div class="page" id="page-agreement">
@@ -497,10 +526,11 @@
     </div>
     <footer>
         <div class="footer-container">
-            <div>&copy; KreZzMonitor. Все права защищены. Версия 1.1.2.6</div>
+            <div>&copy; KreZzMonitor. Все права защищены. Версия 1.1.2.7</div>
             <div class="footer-links">
                 <a onclick="showPage('contacts')">Контакты</a>
                 <a href="https://discord.gg/hTdb4ZyBzS" target="_blank"><i class="fab fa-discord"></i> Discord</a>
+                <a href="https://t.me/+6kJP6t-_emUxYzdi" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
                 <a onclick="showPage('rules')">Правила</a>
                 <a onclick="showPage('agreement')">Соглашение</a>
             </div>
@@ -615,6 +645,11 @@
 
         // ----- СПЛЕШ -----
         setTimeout(()=>{const s=document.getElementById('splashScreen');if(s){s.style.opacity='0';setTimeout(()=>{s.style.display='none'},600)}},2000);
+
+        // ----- РЕКЛАМА (закрытие) -----
+        const sideAd=document.getElementById('sideAd'),sideAdClose=document.getElementById('sideAdClose');
+        if(localStorage.getItem('sideAdClosed')==='1'&&sideAd)sideAd.classList.add('hidden');
+        if(sideAdClose)sideAdClose.addEventListener('click',()=>{sideAd.classList.add('hidden');localStorage.setItem('sideAdClosed','1')});
 
         // ----- КАПЧА -----
         let correctAnswer=0;
