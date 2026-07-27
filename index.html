@@ -568,13 +568,6 @@
         </div>
     </footer>
     <script>
-        // ----- ВЕСЬ JS ОСТАЁТСЯ БЕЗ ИЗМЕНЕНИЙ (такой же, как в вашем коде) -----
-        // (Здесь должен быть ваш полный JavaScript. Я не стал его менять, он рабочий.)
-        // Для экономии места я не копирую его повторно, но вы должны вставить свой полный JS-блок.
-        // В финальной версии просто скопируйте весь JS из вашего исходника сюда.
-        // ВНИМАНИЕ: я оставил заглушку, но вы замените её на свой полный скрипт.
-        // Ниже приведён ваш оригинальный JS-код (я его не менял).
-        
         // ----- ИНИЦИАЛИЗАЦИЯ FIREBASE -----
         const firebaseConfig={apiKey:"AIzaSyDhdICxEq951HtNtw2XUbJmPya8rcVDGHA",authDomain:"reherherherh.firebaseapp.com",projectId:"reherherherh",storageBucket:"reherherherh.firebasestorage.app",messagingSenderId:"381661685916",appId:"1:381661685916:web:8bcec48785a4da3f8a6559",measurementId:"G-8CX69LHMKE"};
         firebase.initializeApp(firebaseConfig);
@@ -727,6 +720,13 @@
 
         function logoutUser(){auth.signOut().then(()=>{updateUIForUser(null);showPage('main')})}
 
+        // ----- ОТКРЫТИЕ СТРАНИЦ И ФУНКЦИЯ openStats -----
+        let currentStatsServerId = null;
+        function openStats(id) {
+            currentStatsServerId = id;
+            showPage('stats');
+        }
+
         function showPage(id){
             document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
             document.getElementById('page-'+id).classList.add('active');
@@ -758,7 +758,7 @@
         const formActions=document.querySelector('.add-form-page .form-actions');if(formActions)formActions.parentNode.insertBefore(captchaGroup,formActions);generateCaptcha();
 
         // ----- ОСНОВНЫЕ ПЕРЕМЕННЫЕ И ФУНКЦИИ -----
-        let servers=[],tags=[],unsubscribe=null,avatarDataURL=null,currentPage=1,PER_PAGE=8,votedServers={},votingCooldown=false,currentStatsServerId=null,statsUnsubscribe=null;
+        let servers=[],tags=[],unsubscribe=null,avatarDataURL=null,currentPage=1,PER_PAGE=8,votedServers={},votingCooldown=false,statsUnsubscribe=null;
         let currentSort = localStorage.getItem('serverSort') || 'new';
         const serversContainer=document.getElementById('serversContainer'),paginationEl=document.getElementById('pagination'),serverName=document.getElementById('serverName'),serverIP=document.getElementById('serverIP'),serverPort=document.getElementById('serverPort'),serverDiscord=document.getElementById('serverDiscord'),serverTelegram=document.getElementById('serverTelegram'),serverDonate=document.getElementById('serverDonate'),serverVersionSelect=document.getElementById('serverVersion'),serverVersionCustom=document.getElementById('serverVersionCustom'),serverDescription=document.getElementById('serverDescription'),tagInput=document.getElementById('tagInput'),addTagBtn=document.getElementById('addTagBtn'),tagsContainer=document.getElementById('tagsContainer'),avatarFileInput=document.getElementById('avatarFileInput'),avatarFileName=document.getElementById('avatarFileName'),avatarPreview=document.getElementById('avatarPreview'),clearAvatarBtn=document.getElementById('clearAvatarBtn'),submitBtn=document.getElementById('submitServerBtn'),nameCounter=document.getElementById('nameCounter'),descCounter=document.getElementById('descCounter'),tagCounter=document.getElementById('tagCounter');
         let activeVersionFilter='all',MAX_TAGS=10;
@@ -1083,44 +1083,44 @@
                 const progressClass=online?'':'offline';
                 const officialBadge=server.isOfficial?'<i class="fas fa-check-circle" style="color:#1da1f2;font-size:13px;margin-left:4px;" title="Официальный сервер"></i>':'';
                 
-                html+='<div class="server-row" data-id="'+server.id+'">';
-                html+='<div class="server-left-side">';
-                html+='<div class="server-top-row">';
-                html+='<div class="server-icon">'+iconHtml+'</div>';
-                html+='<div class="server-main-info">';
-                html+='<div class="server-title-line">';
-                html+='<div class="flag-ru"></div>';
-                html+='<a class="server-title" onclick="openStats(\''+server.id+'\')">'+(server.name||server.address)+officialBadge+'</a>';
-                html+='<span class="server-status-dot '+dotClass+'"></span>';
-                html+='<span style="font-size:11px;color:var(--text-muted);">'+statusText+'</span>';
-                html+='</div>';
-                html+='<div class="server-meta-line">';
-                html+='<span>IP: <strong class="meta-ip" onclick="copyToClipboard(\''+server.address+':'+server.port+'\')">'+server.address+':'+server.port+'</strong></span>';
-                html+='<span>версия: <span class="meta-highlight">'+versionDisplay+'</span></span>';
-                html+='<span class="meta-time">'+timeLabel+' '+timeText+'</span>';
-                html+='</div>';
-                html+='</div>';
-                html+='</div>';
-                if(description)html+='<div class="server-description">'+description+'</div>';
-                if(tags.length)html+='<div class="server-tags-line">'+tags.map(t=>'<span>'+t+'</span>').join('')+'</div>';
-                html+='<div class="server-actions">';
-                html+='<div class="vote-block">';
-                html+='<span class="'+upActive+'" onclick="voteServer(\''+server.id+'\',1)">▲</span>';
-                html+='<span class="vote-count">'+votes+'</span>';
-                html+='<span class="'+downActive+'" onclick="voteServer(\''+server.id+'\',-1)">▼</span>';
-                html+='</div>';
-                html+='</div>';
-                html+='<div class="mod-controls" id="mod-'+server.id+'" style="display:none;">';
-                html+='<button class="mod-btn mod-btn-delete" onclick="deleteServerAsModerator(&#39;'+server.id+'&#39;,true)">🗑️ Удалить + Варн</button>';
-                html+='<button class="mod-btn mod-btn-abyss" onclick="toggleServerAbyss(&#39;'+server.id+'&#39;)">🕳️ '+(server.inAbyss?'Из бездны':'В бездну')+'</button>';
-                html+='<button class="mod-btn mod-btn-official" onclick="toggleServerOfficial(&#39;'+server.id+'&#39;)">✓ '+(server.isOfficial?'Убрать галочку':'Сделать офиц.')+'</button>';
-                html+='</div>';
-                html+='</div>';
-                html+='<div class="online-wrapper">';
-                html+=onlineIconSvg;
-                html+='<div class="online-progress-bar '+progressClass+'">'+(online?playersOnline+' из '+playersMax:'Офлайн')+'</div>';
-                html+='</div>';
-                html+='</div>';
+                html+=`<div class="server-row" data-id="${server.id}">
+                    <div class="server-left-side">
+                        <div class="server-top-row">
+                            <div class="server-icon">${iconHtml}</div>
+                            <div class="server-main-info">
+                                <div class="server-title-line">
+                                    <div class="flag-ru"></div>
+                                    <a class="server-title" onclick="openStats('${server.id}')">${server.name||server.address}${officialBadge}</a>
+                                    <span class="server-status-dot ${dotClass}"></span>
+                                    <span style="font-size:11px;color:var(--text-muted);">${statusText}</span>
+                                </div>
+                                <div class="server-meta-line">
+                                    <span>IP: <strong class="meta-ip" onclick="copyToClipboard('${server.address}:${server.port}')">${server.address}:${server.port}</strong></span>
+                                    <span>версия: <span class="meta-highlight">${versionDisplay}</span></span>
+                                    <span class="meta-time">${timeLabel} ${timeText}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${description ? `<div class="server-description">${description}</div>` : ''}
+                        ${tags.length ? `<div class="server-tags-line">${tags.map(t=>`<span>${t}</span>`).join('')}</div>` : ''}
+                        <div class="server-actions">
+                            <div class="vote-block">
+                                <span class="${upActive}" onclick="voteServer('${server.id}',1)">▲</span>
+                                <span class="vote-count">${votes}</span>
+                                <span class="${downActive}" onclick="voteServer('${server.id}',-1)">▼</span>
+                            </div>
+                        </div>
+                        <div class="mod-controls" id="mod-${server.id}" style="display:none;">
+                            <button class="mod-btn mod-btn-delete" onclick="deleteServerAsModerator('${server.id}', true)">🗑️ Удалить + Варн</button>
+                            <button class="mod-btn mod-btn-abyss" onclick="toggleServerAbyss('${server.id}')">🕳️ ${server.inAbyss ? 'Из бездны' : 'В бездну'}</button>
+                            <button class="mod-btn mod-btn-official" onclick="toggleServerOfficial('${server.id}')">✓ ${server.isOfficial ? 'Убрать галочку' : 'Сделать офиц.'}</button>
+                        </div>
+                    </div>
+                    <div class="online-wrapper">
+                        ${onlineIconSvg}
+                        <div class="online-progress-bar ${progressClass}">${online ? playersOnline+' из '+playersMax : 'Офлайн'}</div>
+                    </div>
+                </div>`;
             });
             serversContainer.innerHTML=html;
             
@@ -1233,7 +1233,7 @@
         
         async function voteServer(id,delta){if(!currentUser){alert('⚠️ Для голосования необходимо войти в аккаунт!');showPage('login');return}if(!await isUserVerified(currentUser.uid)){alert('⚠️ Ваш email не подтверждён. Проверьте почту и подтвердите аккаунт.');showVerifyPage(currentUser.email,currentUser.uid);return}if(votingCooldown)return;votingCooldown=true;setTimeout(()=>{votingCooldown=false},500);const server=servers.find(s=>s.id===id);if(!server)return;const currentDir=getVoteDirection(id);let newDir=0;if(currentDir===delta)newDir=0;else if(currentDir===-delta)newDir=delta;else newDir=delta;const change=newDir-currentDir;if(change===0)return;const newVotes=(server.votes||0)+change;try{await db.collection('servers').doc(id).update({votes:newVotes});server.votes=newVotes;setVoteDirection(id,newDir);applyFiltersAndRender()}catch(e){alert('Не удалось проголосовать.')}}
 
-        // ----- МОИ СЕРВЕРА (БЕЗ ИЗМЕНЕНИЙ) -----
+        // ----- МОИ СЕРВЕРА -----
         let myServersUnsubscribe=null;
         
         function loadMyServers(){
@@ -1319,44 +1319,44 @@
                 const progressClass = online ? '' : 'offline';
                 const officialBadge = server.isOfficial?'<i class="fas fa-check-circle" style="color:#1da1f2;font-size:13px;margin-left:4px;" title="Официальный сервер"></i>':'';
                 
-                html += '<div class="server-row" data-id="'+server.id+'">';
-                html += '<div class="server-left-side">';
-                html += '<div class="server-top-row">';
-                html += '<div class="server-icon">'+iconHtml+'</div>';
-                html += '<div class="server-main-info">';
-                html += '<div class="server-title-line">';
-                html += '<div class="flag-ru"></div>';
-                html += '<a class="server-title" onclick="openStats(\''+server.id+'\')">'+(server.name||server.address)+officialBadge+'</a>';
-                html += '<span class="server-status-dot '+dotClass+'"></span>';
-                html += '<span style="font-size:11px;color:var(--text-muted);">'+statusText+'</span>';
-                html += '</div>';
-                html += '<div class="server-meta-line">';
-                html += '<span>IP: <strong class="meta-ip" onclick="copyToClipboard(\''+server.address+':'+server.port+'\')">'+server.address+':'+server.port+'</strong></span>';
-                html += '<span>версия: <span class="meta-highlight">'+versionDisplay+'</span></span>';
-                html += '<span class="meta-time">'+timeLabel+' '+timeText+'</span>';
-                html += '</div>';
-                html += '</div>';
-                html += '</div>';
-                if(description)html+='<div class="server-description">'+description+'</div>';
-                if(tags.length)html+='<div class="server-tags-line">'+tags.map(t=>'<span>'+t+'</span>').join('')+'</div>';
-                html+='<div class="server-actions">';
-                html+='<div class="vote-block">';
-                html+='<span class="'+upActive+'" onclick="voteServer(\''+server.id+'\',1)">▲</span>';
-                html+='<span class="vote-count">'+votes+'</span>';
-                html+='<span class="'+downActive+'" onclick="voteServer(\''+server.id+'\',-1)">▼</span>';
-                html+='</div>';
-                html+='</div>';
-                html+='<div class="mod-controls" id="mod-'+server.id+'" style="display:none;">';
-                html+='<button class="mod-btn mod-btn-delete" onclick="deleteServerAsModerator(&#39;'+server.id+'&#39;,true)">🗑️ Удалить + Варн</button>';
-                html+='<button class="mod-btn mod-btn-abyss" onclick="toggleServerAbyss(&#39;'+server.id+'&#39;)">🕳️ '+(server.inAbyss?'Из бездны':'В бездну')+'</button>';
-                html+='<button class="mod-btn mod-btn-official" onclick="toggleServerOfficial(&#39;'+server.id+'&#39;)">✓ '+(server.isOfficial?'Убрать галочку':'Сделать офиц.')+'</button>';
-                html+='</div>';
-                html+='</div>';
-                html+='<div class="online-wrapper">';
-                html+=onlineIconSvg;
-                html+='<div class="online-progress-bar '+progressClass+'">'+(online?playersOnline+' из '+playersMax:'Офлайн')+'</div>';
-                html+='</div>';
-                html+='</div>';
+                html += `<div class="server-row" data-id="${server.id}">
+                    <div class="server-left-side">
+                        <div class="server-top-row">
+                            <div class="server-icon">${iconHtml}</div>
+                            <div class="server-main-info">
+                                <div class="server-title-line">
+                                    <div class="flag-ru"></div>
+                                    <a class="server-title" onclick="openStats('${server.id}')">${server.name||server.address}${officialBadge}</a>
+                                    <span class="server-status-dot ${dotClass}"></span>
+                                    <span style="font-size:11px;color:var(--text-muted);">${statusText}</span>
+                                </div>
+                                <div class="server-meta-line">
+                                    <span>IP: <strong class="meta-ip" onclick="copyToClipboard('${server.address}:${server.port}')">${server.address}:${server.port}</strong></span>
+                                    <span>версия: <span class="meta-highlight">${versionDisplay}</span></span>
+                                    <span class="meta-time">${timeLabel} ${timeText}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${description ? `<div class="server-description">${description}</div>` : ''}
+                        ${tags.length ? `<div class="server-tags-line">${tags.map(t=>`<span>${t}</span>`).join('')}</div>` : ''}
+                        <div class="server-actions">
+                            <div class="vote-block">
+                                <span class="${upActive}" onclick="voteServer('${server.id}',1)">▲</span>
+                                <span class="vote-count">${votes}</span>
+                                <span class="${downActive}" onclick="voteServer('${server.id}',-1)">▼</span>
+                            </div>
+                        </div>
+                        <div class="mod-controls" id="mod-${server.id}" style="display:none;">
+                            <button class="mod-btn mod-btn-delete" onclick="deleteServerAsModerator('${server.id}', true)">🗑️ Удалить + Варн</button>
+                            <button class="mod-btn mod-btn-abyss" onclick="toggleServerAbyss('${server.id}')">🕳️ ${server.inAbyss ? 'Из бездны' : 'В бездну'}</button>
+                            <button class="mod-btn mod-btn-official" onclick="toggleServerOfficial('${server.id}')">✓ ${server.isOfficial ? 'Убрать галочку' : 'Сделать офиц.'}</button>
+                        </div>
+                    </div>
+                    <div class="online-wrapper">
+                        ${onlineIconSvg}
+                        <div class="online-progress-bar ${progressClass}">${online ? playersOnline+' из '+playersMax : 'Офлайн'}</div>
+                    </div>
+                </div>`;
             });
             container.innerHTML = html;
             
@@ -1410,6 +1410,21 @@
             } catch(e) {
                 alert('❌ Ошибка: ' + e.message);
             }
+        }
+
+        function renderPagination(totalPages) {
+            if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<a class="page-link ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</a>`;
+            }
+            paginationEl.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            applyFiltersAndRender();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // ----- ИНИЦИАЛИЗАЦИЯ -----
