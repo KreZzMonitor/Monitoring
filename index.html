@@ -1,3 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="yandex-verification" content="562347cf38a747b0" />
+    <meta name="google-site-verification" content="Ci1xjcQI1VrrzrwTn-t_tX298PWylmQNJQ7PFGYjodU" />
+    <title>KreZzMonitor — мониторинг серверов Minecraft</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        /* ----- БАЗОВЫЕ СТИЛИ (ОБНОВЛЕНЫ ДЛЯ БОЛЬШИХ КНОПОК) ----- */
+        *{box-sizing:border-box;margin:0;padding:0;font-family:Tahoma,Geneva,sans-serif}
+        :root{--bg-body:#fff;--bg-header:#212121;--bg-header-hover:#2b2b2b;--bg-card:#fff;--bg-card-hover:#f8f8f8;--bg-filter:#f5f5f5;--bg-input:#f0f0f0;--bg-tag:#e8f0fe;--text-primary:#333;--text-secondary:#666;--text-muted:#888;--text-link:#06c;--border-color:#e0e0e0;--border-light:#eee;--shadow-color:rgba(0,0,0,0.05);--tag-color:#06c;--ip-color:#444;--btn-outline-border:#ccc;--btn-outline-hover:#f0f0f0;--danger-color:#dc3545;--success-color:#28a745;--status-dot-on:#28a745;--status-dot-off:#dc3545;--arrow-color:#aaa;--arrow-hover:#28a745;--arrow-active:#28a745;--vote-color:#333;--progress-bg:#28a745;--progress-bg-offline:#888;--progress-text:#fff;--splash-bg:#fff;--bg-page-legal:#fafafa;--arrow-disabled:#ccc;--chart-grid:#ddd;--chart-line:#28a745;--chart-fill:rgba(40,167,69,0.2);--online-icon-color:#28a745;--auth-btn-bg:#2980b9;--auth-btn-hover:#3498db;--char-counter-color:#888;--boost-color:#f59e0b;--boost-bg:rgba(245,158,11,0.1)}
+        body.dark-theme{--bg-body:#0b0d12;--bg-header:#161a24;--bg-header-hover:#1e2335;--bg-card:rgba(22,26,38,0.8);--bg-card-hover:rgba(30,35,50,0.9);--bg-filter:rgba(255,255,255,0.05);--bg-input:rgba(255,255,255,0.06);--bg-tag:rgba(167,139,250,0.15);--text-primary:#eef2f6;--text-secondary:rgba(255,255,255,0.6);--text-muted:rgba(255,255,255,0.35);--text-link:#7c9eff;--border-color:rgba(255,255,255,0.08);--border-light:rgba(255,255,255,0.05);--shadow-color:rgba(0,0,0,0.4);--tag-color:#a78bfa;--ip-color:#c0c0c0;--btn-outline-border:rgba(255,255,255,0.12);--btn-outline-hover:rgba(255,255,255,0.06);--danger-color:#ef4444;--success-color:#10b981;--status-dot-on:#34d399;--status-dot-off:#f87171;--arrow-color:rgba(255,255,255,0.25);--arrow-hover:#34d399;--arrow-active:#34d399;--vote-color:#eef2f6;--progress-bg:#2ecc71;--progress-bg-offline:#555;--progress-text:#fff;--splash-bg:#0b0d12;--bg-page-legal:#141824;--arrow-disabled:#555;--chart-grid:#444;--chart-line:#34d399;--chart-fill:rgba(52,211,153,0.2);--online-icon-color:#34d399;--auth-btn-bg:#2980b9;--auth-btn-hover:#3498db;--boost-color:#fbbf24;--boost-bg:rgba(251,191,36,0.15)}
+        
+        body{background:var(--bg-body);color:var(--text-primary);font-size:14px;display:flex;flex-direction:column;min-height:100vh;transition:background .3s,color .3s}
+        header{background:var(--bg-header);border-bottom:2px solid rgba(0,0,0,0.2);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;transition:background .3s;gap:8px;flex-wrap:wrap}
+        .header-left{display:flex;align-items:center;gap:8px;color:#fff;font-size:17px;font-weight:bold;text-decoration:none;cursor:pointer;white-space:nowrap}
+        nav{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+        nav a{color:#b3b3b3;text-decoration:none;font-size:14px;padding:0 10px;height:100%;display:flex;align-items:center;transition:background .2s;cursor:pointer;white-space:nowrap}
+        nav a:hover{color:#fff;background:var(--bg-header-hover)}
+        .nav-btn{color:#fff!important;border-radius:4px;padding:0 16px!important;height:34px!important;margin:auto 0;border:none;font-size:13px;cursor:pointer;transition:background .2s;white-space:nowrap;font-weight:600}
+        .nav-login-btn{background:#2980b9;margin-right:6px!important}
+        .nav-login-btn:hover{background:#3498db!important}
+        .nav-register-btn{background:#27ae60;margin-left:0!important}
+        .nav-register-btn:hover{background:#2ecc71!important}
+        .nav-logout-btn{background:#dc3545}
+        .nav-logout-btn:hover{background:#c82333!important}
+        .nav-user-info{color:#b3b3b3!important;font-size:13px;display:flex;align-items:center;gap:6px;padding:0 8px!important;height:100%!important;cursor:default}
+        .nav-user-info img{width:28px;height:28px;border-radius:50%}
+        .nav-user-info .user-uid{font-size:10px;color:var(--text-muted);margin-left:4px;cursor:pointer;border-bottom:1px dashed var(--border-color)}
+        .nav-user-info .user-uid:hover{color:var(--text-link)}
+        .nav-add-btn{color:#b3b3b3!important;background:transparent!important;border-radius:0!important;padding:0 10px!important;height:100%!important;margin:auto 0!important;font-size:14px}
+        .nav-add-btn:hover{color:#fff!important;background:var(--bg-header-hover)!important}
+        #authButtons{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+        .theme-toggle{background:0;border:0;color:#b3b3b3;font-size:18px;cursor:pointer;padding:0 8px;height:100%;display:flex;align-items:center;transition:color .2s}
+        .theme-toggle:hover{color:#fff}
+        .main-content{max-width:960px;width:100%;margin:15px auto;padding:0 12px;flex:1}
+        .page{display:none;animation:fadeIn .3s ease}
+        .page.active{display:block}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        h1{font-size:22px;font-weight:400;color:var(--text-primary);margin-bottom:10px}
+        .top-description{color:var(--text-secondary);font-size:13px;line-height:1.5;margin-bottom:12px}
+        .version-box{border:1px solid var(--border-color);border-radius:4px;padding:8px;display:flex;flex-wrap:wrap;gap:4px;background:var(--bg-card);margin-bottom:12px;transition:background .3s,border .3s}
+        .v-tag{font-size:12px;color:var(--text-link);text-decoration:none;padding:3px 8px;border-radius:3px;transition:all .2s;cursor:pointer}
+        .v-tag:hover{text-decoration:underline;background:var(--bg-tag)}
+        .v-tag.all-versions{background:#00a2ff;color:#fff;border-radius:3px;padding:3px 10px}
+        .v-tag.all-versions:hover{background:#0090e0;text-decoration:none}
+        .v-tag.active-version{background:var(--bg-tag);font-weight:bold;text-decoration:underline}
+        .servers-container{display:flex;flex-direction:column;gap:16px;margin-bottom:20px}
+        .server-row{display:flex;flex-direction:column;background:var(--bg-card);padding:12px 16px;border-radius:8px;border:1px solid var(--border-light);transition:background .3s,border .3s,transform .2s;position:relative}
+        .server-row:hover{background:var(--bg-card-hover);transform:translateY(-2px);box-shadow:0 4px 12px var(--shadow-color)}
+        .server-row.boosted{border-color:var(--boost-color);background:var(--boost-bg)}
+        .server-left-side{display:flex;flex-direction:column;gap:6px;width:100%}
+        .server-top-row{display:flex;align-items:flex-start;width:100%}
+        .server-icon{width:40px;height:40px;margin-right:14px;margin-top:2px;flex-shrink:0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#a78bfa;background:var(--bg-input);overflow:hidden}
+        .server-icon img{width:100%;height:100%;object-fit:cover}
+        .server-main-info{display:flex;flex-direction:column;gap:4px;flex:1;min-width:0}
+        .server-title-line{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+        .flag-ru{width:20px;height:13px;background:linear-gradient(#fff 33%,#0039a6 33%,#0039a6 66%,#d52b1e 66%);border:1px solid #ddd;flex-shrink:0}
+        .server-title{color:var(--text-link);font-size:15px;font-weight:bold;text-decoration:none;cursor:pointer;word-break:break-word}
+        .server-title:hover{text-decoration:underline}
+        .server-meta-line{font-size:11px;color:var(--text-muted);display:flex;flex-wrap:wrap;gap:2px 10px;align-items:center}
+        .server-meta-line .meta-ip{color:var(--ip-color);font-weight:bold;cursor:pointer;border-bottom:1px dashed var(--border-color)}
+        .server-meta-line .meta-ip:hover{color:var(--text-link)}
+        .server-meta-line .meta-highlight{color:var(--text-secondary)}
+        .server-meta-line .meta-time{color:var(--text-muted);font-style:italic}
+        .server-description{font-size:12px;color:var(--text-secondary);margin-top:2px;line-height:1.4;word-break:break-word}
+        .server-tags-line{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+        .server-tags-line span{background:var(--bg-tag);padding:2px 10px;border-radius:14px;font-size:11px;color:var(--tag-color)}
+        .server-actions{display:flex;align-items:center;gap:14px;margin-top:8px;flex-wrap:wrap}
+        .vote-block{display:flex;align-items:center;background:var(--bg-input);padding:4px 12px;border-radius:16px;gap:8px}
+        .vote-block .vote-arrow{color:var(--arrow-color);font-size:16px;cursor:pointer;transition:color .2s,transform .2s;line-height:1}
+        .vote-block .vote-arrow:hover{color:var(--arrow-hover);transform:scale(1.2)}
+        .vote-block .vote-arrow-active{color:var(--arrow-active);font-size:16px;cursor:pointer;line-height:1}
+        .vote-block .vote-arrow-active:hover{transform:scale(1.2)}
+        .vote-block .vote-count{font-weight:700;font-size:16px;color:var(--vote-color)}
+        .online-wrapper{display:flex;align-items:center;gap:8px;margin-top:6px;width:100%}
+        .online-icon-svg{width:24px;height:24px;fill:none;stroke:var(--online-icon-color);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;transition:stroke .3s,opacity .3s}
+        .online-icon-svg .head{fill:rgba(40,167,69,0.1)}
+        .online-icon-svg .body{fill:rgba(40,167,69,0.05)}
+        body.dark-theme .online-icon-svg .head{fill:rgba(52,211,153,0.1)}
+        body.dark-theme .online-icon-svg .body{fill:rgba(52,211,153,0.05)}
+        .online-icon-svg.offline{stroke:var(--status-dot-off);opacity:.5}
+        .online-icon-svg.offline .head{fill:rgba(220,53,69,0.1)}
+        .online-icon-svg.offline .body{fill:rgba(220,53,69,0.05)}
+        .online-progress-bar{flex:1;height:22px;background:var(--progress-bg);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--progress-text);font-size:12px;font-weight:bold;transition:background .3s;min-width:70px}
+        .online-progress-bar.offline{background:var(--progress-bg-offline)}
+        .server-status-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--status-dot-on);margin-right:4px}
+        .server-status-dot.offline{background:var(--status-dot-off)}
+        .pagination{display:flex;justify-content:center;gap:6px;margin:20px 0;flex-wrap:wrap}
+        .page-link{display:inline-block;padding:6px 12px;border:1px solid var(--border-color);color:var(--text-link);text-decoration:none;border-radius:4px;cursor:pointer;background:var(--bg-card);transition:background .2s;font-size:14px}
+        .page-link.active{background:var(--bg-filter);color:var(--text-primary);font-weight:bold;border-color:var(--border-color)}
+        .page-link:hover:not(.active){background:var(--bg-card-hover);text-decoration:underline}
+        .legal-page{max-width:800px;margin:0 auto;padding:20px;background:var(--bg-card);border-radius:12px;border:1px solid var(--border-color);line-height:1.6}
+        .legal-page h1{margin-bottom:16px;font-size:24px}
+        .legal-page h2{font-size:18px;margin-top:16px;margin-bottom:8px;color:var(--text-secondary)}
+        .legal-page p{margin-bottom:10px;color:var(--text-secondary)}
+        .legal-page ul{margin-left:16px;margin-bottom:10px;color:var(--text-secondary)}
+        .legal-page .back-link{display:inline-block;margin-bottom:16px;cursor:pointer;color:var(--text-link)}
+        .legal-page .back-link:hover{text-decoration:underline}
+        .add-form-page{max-width:720px;margin:0 auto 30px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:12px;padding:24px 20px;transition:background .3s,border .3s}
+        .add-form-page h2{font-size:22px;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+        .add-form-page .form-group{margin-bottom:16px}
+        .add-form-page .form-group label{display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+        .add-form-page .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .add-form-page input,.add-form-page select,.add-form-page textarea{width:100%;background:var(--bg-input);border:1px solid var(--border-light);border-radius:6px;padding:10px 14px;color:var(--text-primary);font-size:14px;outline:0;transition:border .2s,background .3s;font-family:inherit}
+        .add-form-page select option{background:var(--bg-body);color:var(--text-primary)}
+        .add-form-page textarea{resize:vertical;min-height:80px}
+        .add-form-page input:focus,.add-form-page select:focus,.add-form-page textarea:focus{border-color:#2980b9}
+        .add-form-page .tags-input-wrap{display:flex;gap:10px;flex-wrap:wrap}
+        .add-form-page .tags-input-wrap input{flex:1;min-width:140px}
+        .add-form-page .tag-item{background:var(--bg-tag);border:1px solid var(--border-light);padding:4px 12px 4px 14px;border-radius:20px;font-size:13px;color:var(--tag-color);display:inline-flex;align-items:center;gap:6px}
+        .add-form-page .tag-item .remove-tag{cursor:pointer;color:var(--text-muted);font-size:13px;transition:color .2s}
+        .add-form-page .tag-item .remove-tag:hover{color:var(--danger-color)}
+        .add-form-page .avatar-upload{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+        .add-form-page .avatar-preview{width:72px;height:72px;border-radius:12px;background:var(--bg-input);border:2px dashed var(--border-color);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--text-muted);overflow:hidden;flex-shrink:0;position:relative}
+        .add-form-page .avatar-preview img{width:100%;height:100%;object-fit:cover}
+        .add-form-page .form-actions{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}
+        .add-form-page .char-counter{font-size:11px;color:var(--char-counter-color);text-align:right;margin-top:3px}
+        .add-form-page .char-counter.over{color:var(--danger-color)}
+        .btn{padding:12px 28px;border:none;border-radius:30px;font-weight:600;font-size:16px;cursor:pointer;transition:all .25s;background:transparent;color:var(--text-primary);border:1px solid var(--btn-outline-border);white-space:nowrap}
+        .btn-primary{background:#2980b9;border:none;color:#fff}
+        .btn-primary:hover{background:#3498db}
+        .btn-success{background:#27ae60;border:none;color:#fff}
+        .btn-success:hover{background:#2ecc71}
+        .btn-danger{background:#dc3545;border:none;color:#fff}
+        .btn-danger:hover{background:#c82333}
+        .btn-warning{background:var(--boost-color);border:none;color:#fff}
+        .btn-warning:hover{opacity:.85}
+        .btn-outline{border:1px solid var(--btn-outline-border)}
+        .btn-outline:hover{background:var(--btn-outline-hover)}
+        .btn-sm{padding:8px 18px;font-size:14px}
+        .btn-back{background:var(--bg-input);border:1px solid var(--border-light);color:var(--text-primary)}
+        .btn-back:hover{background:var(--btn-outline-hover)}
+        .boost-badge{display:inline-block;background:var(--boost-color);color:#fff;font-size:10px;padding:2px 8px;border-radius:12px;font-weight:bold;margin-left:6px}
+        footer{background:var(--bg-header);color:#888;padding:16px 20px;font-size:11px;border-top:1px solid rgba(0,0,0,0.2);margin-top:auto;transition:background .3s}
+        .footer-container{max-width:960px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+        .footer-links a{color:#888;text-decoration:none;margin-left:14px;cursor:pointer;font-size:11px}
+        .footer-links a:hover{color:#fff;text-decoration:underline}
+        #splashScreen{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--splash-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .6s ease}
+        #splashScreen .spinner{width:50px;height:50px;border:4px solid rgba(167,139,250,0.2);border-top-color:#a78bfa;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+        #splashScreen h2{font-weight:400;color:var(--text-secondary);font-size:18px}
+        #splashScreen p{color:var(--text-muted);font-size:13px;margin-top:6px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        #copyNotification{position:fixed;top:60px;right:20px;background:var(--success-color);color:#fff;padding:10px 18px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.2);font-size:14px;font-weight:bold;opacity:0;transform:translateY(-10px);transition:opacity .3s,transform .3s;pointer-events:none;z-index:999}
+        #copyNotification.show{opacity:1;transform:translateY(0)}
+        .stats-page{max-width:800px;margin:0 auto;background:var(--bg-card);border-radius:12px;padding:20px 16px;border:1px solid var(--border-color)}
+        .stats-page h2{font-size:22px;margin-bottom:6px}
+        .stats-page .stats-sub{color:var(--text-secondary);margin-bottom:16px;font-size:14px}
+        .stats-page .stats-detail{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+        .stats-page .stats-detail .stat-item{background:var(--bg-input);padding:10px 14px;border-radius:8px}
+        .stats-page .stats-detail .stat-item .label{font-size:11px;color:var(--text-muted);text-transform:uppercase}
+        .stats-page .stats-detail .stat-item .value{font-size:18px;font-weight:bold;color:var(--text-primary)}
+        .stats-page canvas{width:100%!important;height:200px!important;background:var(--bg-input);border-radius:6px;margin-top:8px}
+        .stats-page .back-link{display:inline-block;margin-bottom:16px;cursor:pointer;color:var(--text-link)}
+        .stats-page .back-link:hover{text-decoration:underline}
+        .auth-page{max-width:420px;margin:0 auto 30px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:32px 24px;transition:background .3s,border .3s}
+        .auth-page h2{font-size:22px;text-align:center;margin-bottom:6px}
+        .auth-page .auth-sub{color:var(--text-secondary);font-size:14px;text-align:center;margin-bottom:24px}
+        .auth-page .form-group{margin-bottom:16px}
+        .auth-page .form-group label{display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+        .auth-page .form-group input{width:100%;background:var(--bg-input);border:1px solid var(--border-light);border-radius:6px;padding:10px 14px;color:var(--text-primary);font-size:14px;outline:0;transition:border .2s,background .3s}
+        .auth-page .form-group input:focus{border-color:#2980b9}
+        .auth-btn{width:100%;padding:12px;background:var(--auth-btn-bg);color:#fff;border:none;border-radius:30px;font-size:17px;font-weight:600;cursor:pointer;transition:background .25s}
+        .auth-btn:hover{background:var(--auth-btn-hover)}
+        .auth-btn:disabled{opacity:.6;cursor:not-allowed}
+        .auth-page .auth-error{color:var(--danger-color);font-size:13px;margin-top:10px;min-height:20px;text-align:center}
+        .auth-page .auth-success{color:var(--success-color);font-size:13px;margin-top:10px;min-height:20px;text-align:center}
+        .auth-page .auth-links{text-align:center;margin-top:16px;font-size:14px;color:var(--text-secondary)}
+        .auth-page .auth-links a{color:var(--text-link);cursor:pointer;text-decoration:none}
+        .auth-page .auth-links a:hover{text-decoration:underline}
+        .auth-page .back-link{display:block;text-align:center;margin-top:16px;cursor:pointer;color:var(--text-link);font-size:13px}
+        .auth-page .back-link:hover{text-decoration:underline}
+        .verify-page{max-width:420px;margin:0 auto 30px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:16px;padding:32px 24px;transition:background .3s,border .3s}
+        .verify-page h2{font-size:22px;text-align:center;margin-bottom:6px}
+        .verify-page .verify-sub{color:var(--text-secondary);font-size:14px;text-align:center;margin-bottom:16px}
+        .verify-page .form-group{margin-bottom:16px}
+        .verify-page .form-group label{display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+        .verify-page .form-group input{width:100%;background:var(--bg-input);border:1px solid var(--border-light);border-radius:6px;padding:10px 14px;color:var(--text-primary);font-size:18px;outline:0;transition:border .2s,background .3s;text-align:center;letter-spacing:8px;font-weight:bold}
+        .verify-page .form-group input:focus{border-color:#2980b9}
+        .verify-btn{width:100%;padding:12px;background:var(--success-color);color:#fff;border:none;border-radius:30px;font-size:17px;font-weight:600;cursor:pointer;transition:background .25s}
+        .verify-btn:hover{opacity:.85}
+        .verify-btn:disabled{opacity:.6;cursor:not-allowed}
+        .verify-page .verify-error{color:var(--danger-color);font-size:13px;margin-top:10px;min-height:20px;text-align:center}
+        .verify-page .verify-success{color:var(--success-color);font-size:13px;margin-top:10px;min-height:20px;text-align:center}
+        .verify-page .resend-link{text-align:center;margin-top:16px;font-size:14px;color:var(--text-secondary)}
+        .verify-page .resend-link a{color:var(--text-link);cursor:pointer;text-decoration:none}
+        .verify-page .resend-link a:hover{text-decoration:underline}
+        .verify-page .back-link{display:block;text-align:center;margin-top:16px;cursor:pointer;color:var(--text-link);font-size:13px}
+        .verify-page .back-link:hover{text-decoration:underline}
+        .my-servers-page{max-width:960px;margin:0 auto}
+        .my-servers-page .empty-state{text-align:center;padding:40px 16px;color:var(--text-muted)}
+        .my-servers-page .empty-state i{font-size:44px;display:block;margin-bottom:12px}
+        .my-servers-page .server-actions-right{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+        .boost-btn{background:var(--boost-color);color:#fff;border:none;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;transition:all .2s;white-space:nowrap}
+        .boost-btn:hover:not(:disabled){opacity:.8;transform:scale(1.05)}
+        .boost-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+        .boost-btn.used{background:var(--text-muted)}
+        .boost-info{font-size:11px;color:var(--text-muted);white-space:nowrap}
+        .side-ad{position:fixed;right:20px;top:130px;width:240px;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:20px 16px;text-align:center;box-shadow:0 4px 12px var(--shadow-color);z-index:100;transition:background .3s,border .3s;display:block}
+        .side-ad .side-ad-close{position:absolute;top:4px;right:6px;cursor:pointer;color:var(--text-muted);font-size:16px;line-height:1;background:0;border:0;padding:2px}
+        .side-ad .side-ad-close:hover{color:var(--danger-color)}
+        .side-ad .side-ad-title{font-size:17px;font-weight:bold;color:var(--text-link);margin-bottom:10px;line-height:1.3}
+        .side-ad .side-ad-text{font-size:14px;color:var(--text-secondary);line-height:1.5;margin-bottom:10px}
+        .side-ad .side-ad-contact{font-size:15px;color:var(--text-link);font-weight:600;word-break:break-word}
+        .side-ad.hidden{display:none}
+        .mobile-ad{display:none;background:var(--bg-card);border:1px solid var(--border-color);border-radius:8px;padding:20px;text-align:center;margin:20px 0;box-shadow:0 4px 12px var(--shadow-color)}
+        .mobile-ad .mobile-ad-title{font-size:18px;font-weight:bold;color:var(--text-link);margin-bottom:10px}
+        .mobile-ad .mobile-ad-text{font-size:14px;color:var(--text-secondary);line-height:1.5;margin-bottom:10px}
+        .mobile-ad .mobile-ad-contact{font-size:16px;color:var(--text-link);font-weight:600}
+        .mod-controls{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+        .mod-btn{padding:8px 16px;border:none;border-radius:4px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+        .mod-btn-delete{background:#dc3545;color:#fff}
+        .mod-btn-delete:hover{background:#c82333}
+        .mod-btn-delete-novarn{background:#6c757d;color:#fff}
+        .mod-btn-delete-novarn:hover{background:#5a6268}
+        .mod-btn-abyss{background:#f59e0b;color:#fff}
+        .mod-btn-abyss:hover{background:#d97706}
+        .mod-btn-official{background:#1da1f2;color:#fff}
+        .mod-btn-official:hover{background:#1a8cd8}
+        .edit-btn{background:#6c757d;color:#fff;border:none;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:bold;cursor:pointer;transition:all .2s;white-space:nowrap}
+        .edit-btn:hover{background:#5a6268}
+        .admin-panel{max-width:800px;margin:0 auto;background:var(--bg-card);border-radius:12px;padding:20px;border:1px solid var(--border-color)}
+        .admin-panel h2{font-size:20px;margin-bottom:12px}
+        .admin-panel .form-group{margin-bottom:12px}
+        .admin-panel .form-group label{display:block;font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:4px}
+        .admin-panel input{width:100%;padding:8px 12px;border:1px solid var(--border-color);border-radius:4px;background:var(--bg-input);color:var(--text-primary);font-size:14px}
+        .admin-panel .info-text{font-size:13px;color:var(--text-secondary);margin-bottom:10px}
+        .admin-panel .role-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:bold;background:#f0f0f0;color:#333}
+        .admin-panel .role-badge.admin{background:#dc3545;color:#fff}
+        .admin-panel .role-badge.moderator{background:#f59e0b;color:#fff}
+        .admin-panel .role-badge.user{background:#6c757d;color:#fff}
+
+        /* ----- АДАПТИВНОСТЬ ДЛЯ ПЛАНШЕТОВ И ТЕЛЕФОНОВ ----- */
+        @media(max-width:1024px){.main-content{max-width:100%;padding:0 10px}header{padding:0 12px;height:auto;gap:4px;padding-top:6px;padding-bottom:6px}nav{gap:4px}nav a{font-size:13px;padding:0 8px}.header-left{font-size:16px}}
+        @media(max-width:768px){.main-content{margin:10px auto}.server-row{padding:10px 12px}.server-title{font-size:14px}.server-meta-line{font-size:10px}.server-icon{width:34px;height:34px;margin-right:10px}.online-progress-bar{height:18px;font-size:10px}.add-form-page{padding:18px}.add-form-page .form-row{grid-template-columns:1fr}.auth-page,.verify-page{padding:26px 18px}.stats-page{padding:16px}.stats-page .stats-detail{grid-template-columns:1fr 1fr}.footer-container{flex-direction:column;gap:6px;text-align:center}.footer-links a{margin:0 6px}.side-ad{display:none}.mobile-ad{display:block}.btn{padding:14px 28px;font-size:17px}.btn-sm{padding:10px 20px;font-size:15px}}
+        @media(max-width:480px){h1{font-size:19px}.top-description{font-size:12px}.server-row{padding:8px 10px;gap:6px}.server-top-row{align-items:center}.server-icon{width:30px;height:30px;margin-right:8px;font-size:18px}.server-title{font-size:13px}.server-meta-line{font-size:9px;gap:2px 6px}.server-description{font-size:11px}.server-tags-line span{font-size:10px;padding:1px 8px}.vote-block{padding:2px 8px;gap:5px}.vote-block .vote-arrow,.vote-block .vote-arrow-active{font-size:14px}.vote-block .vote-count{font-size:14px}.online-wrapper{gap:5px}.online-icon-svg{width:20px;height:20px}.online-progress-bar{height:16px;font-size:9px;min-width:60px}.version-box{padding:5px;gap:3px}.v-tag{font-size:10px;padding:2px 6px}.v-tag.all-versions{padding:2px 7px}.pagination{gap:4px}.page-link{padding:4px 8px;font-size:12px}.add-form-page{padding:14px}.add-form-page h2{font-size:19px}.add-form-page .form-group{margin-bottom:12px}.add-form-page input,.add-form-page select,.add-form-page textarea{padding:8px 12px;font-size:13px}.add-form-page .form-row{grid-template-columns:1fr}.auth-page,.verify-page{padding:20px 16px}.auth-page h2,.verify-page h2{font-size:20px}.auth-page .auth-sub,.verify-page .verify-sub{font-size:13px}.auth-btn,.verify-btn{padding:14px;font-size:17px}.stats-page{padding:12px}.stats-page h2{font-size:19px}.stats-page .stats-detail{grid-template-columns:1fr}.stats-page .stats-detail .stat-item .value{font-size:16px}.stats-page canvas{height:150px!important}.my-servers-page .server-actions-right{flex-direction:column;align-items:stretch;width:100%}.boost-btn,.edit-btn{width:100%;text-align:center;padding:10px 16px;font-size:14px}.footer-container{font-size:10px}.footer-links a{font-size:10px;margin:0 4px}.side-ad{display:none}.btn{padding:16px 32px;font-size:18px}.btn-sm{padding:12px 22px;font-size:16px}}
+    </style>
+</head>
+<body>
+    <div id="copyNotification">Скопировано!</div>
+    <div id="splashScreen"><div class="spinner"></div><h2>Проверка соединения...</h2><p>Защита от DDoS</p></div>
+    <div class="side-ad" id="sideAd">
+        <button class="side-ad-close" id="sideAdClose" title="Закрыть">✕</button>
+        <div class="side-ad-title">📢 Ваша реклама</div>
+        <div class="side-ad-text">Тут может быть ваша реклама</div>
+        <div class="side-ad-contact">Писать в тг: @SpookieHeart</div>
+    </div>
+    <header>
+        <a class="header-left" onclick="showPage('main')"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="2" fill="none"/></svg>KreZzMonitor</a>
+        <nav id="mainNav">
+            <a onclick="showPage('main')">Новые сервера</a>
+            <a class="nav-add-btn" onclick="showPage('add')">Добавить сервер</a>
+            <a id="myServersNav" onclick="showPage('myservers')" style="display:none;color:#f59e0b!important;">Мои сервера</a>
+            <a id="adminNav" onclick="showPage('admin')" style="display:none;color:#dc3545!important;">Админ-панель</a>
+            <div id="authButtons">
+                <button class="nav-btn nav-login-btn" onclick="showPage('login')">Войти</button>
+                <button class="nav-btn nav-register-btn" onclick="showPage('register')">Зарегистрироваться</button>
+            </div>
+            <div id="userInfo" style="display:none;">
+                <span class="nav-user-info" id="userDisplayName">
+                    <img id="userAvatar" src="" alt="avatar" />
+                    <span id="userNameText"></span>
+                    <span class="user-uid" id="userUidDisplay" title="Ваш цифровой ID (нажмите для копирования)"></span>
+                </span>
+                <button class="nav-btn nav-logout-btn" onclick="logoutUser()">Выйти</button>
+            </div>
+            <button class="theme-toggle" id="themeToggle" title="Переключить тему"><i class="fas fa-moon"></i></button>
+        </nav>
+    </header>
+    <div class="main-content">
+        <div class="page active" id="page-main">
+            <h1>Новые сервера Майнкрафт</h1>
+            <p class="top-description">На этой странице отображаются новые сервера Майнкрафт, которые открылись только что или совсем недавно. Сервера отсортированы по дате открытия в порядке от самых новых к старым.</p>
+            <div class="version-box" id="versionBox"><a class="v-tag all-versions" data-version="all">Все версии</a></div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+                <input type="text" id="searchInput" placeholder="Поиск по названию..." style="flex:1;min-width:140px;padding:8px 12px;border:1px solid var(--border-color);border-radius:4px;background:var(--bg-input);color:var(--text-primary);outline:0;font-size:14px;" />
+                <select id="sortSelect" style="padding:8px 12px;border:1px solid var(--border-color);border-radius:4px;background:var(--bg-input);color:var(--text-primary);outline:0;font-size:14px;cursor:pointer;">
+                    <option value="new">По новизне</option>
+                    <option value="players">По игрокам</option>
+                    <option value="votes">По голосам</option>
+                </select>
+            </div>
+            <div class="servers-container" id="serversContainer"><div style="text-align:center;padding:30px 0;color:var(--text-muted);"><i class="fas fa-server" style="font-size:32px;display:block;margin-bottom:8px;"></i>Загрузка...</div></div>
+            <div class="mobile-ad">
+                <div class="mobile-ad-title">📢 Ваша реклама</div>
+                <div class="mobile-ad-text">Тут может быть ваша реклама</div>
+                <div class="mobile-ad-contact">Писать в тг: @SpookieHeart</div>
+            </div>
+            <div class="pagination" id="pagination"></div>
+        </div>
+        
+        <div class="page" id="page-myservers">
+            <div style="margin-top:6px;margin-bottom:12px;">
+                <button class="btn btn-back" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> Назад</button>
+            </div>
+            <div class="my-servers-page">
+                <h1><i class="fas fa-user-cog" style="color:var(--boost-color);"></i> Мои сервера</h1>
+                <p class="top-description">Здесь отображаются сервера, которые вы добавили. Вы можете поднять сервер наверх раз в сутки, если он онлайн, а также редактировать информацию.</p>
+                <div class="servers-container" id="myServersContainer"><div style="text-align:center;padding:30px 0;color:var(--text-muted);"><i class="fas fa-spinner fa-spin" style="font-size:32px;display:block;margin-bottom:8px;"></i>Загрузка...</div></div>
+            </div>
+        </div>
+        
+        <div class="page" id="page-admin">
+            <div style="margin-top:6px;margin-bottom:12px;">
+                <button class="btn btn-back" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> Назад</button>
+            </div>
+            <div class="admin-panel">
+                <h2><i class="fas fa-user-shield"></i> Админ-панель</h2>
+                <p class="top-description">Управление ролями пользователей. Введите UID пользователя и назначьте ему роль модератора.</p>
+                <div class="form-group">
+                    <label>UID пользователя</label>
+                    <input type="text" id="adminUidInput" placeholder="Введите UID (цифровой ID)" />
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-warning" id="adminSetModeratorBtn"><i class="fas fa-user-tag"></i> Назначить модератором</button>
+                    <button class="btn btn-danger" id="adminRemoveModeratorBtn" style="margin-left:8px;"><i class="fas fa-user-minus"></i> Снять модератора</button>
+                    <button class="btn btn-primary" id="adminCheckPermissionsBtn" style="margin-left:8px;"><i class="fas fa-shield-alt"></i> Проверить права</button>
+                </div>
+                <div id="adminResult" style="margin-top:12px;font-size:13px;color:var(--text-secondary);"></div>
+                <hr style="margin:16px 0;border-color:var(--border-color);" />
+                <div class="info-text">
+                    <strong>Текущий пользователь:</strong> <span id="adminCurrentUser">—</span><br>
+                    <strong>Ваша роль:</strong> <span id="adminCurrentRole">—</span><br>
+                    <strong>Ваш UID:</strong> <span id="adminCurrentUid">—</span>
+                </div>
+                <div class="info-text" style="margin-top:8px;background:var(--bg-tag);padding:10px;border-radius:6px;">
+                    <strong>⚠️ Настройка Firestore для работы модерации:</strong><br>
+                    Если вы видите ошибку «Missing or insufficient permissions», настройте правила Firestore:
+                    <ol style="margin-top:6px;padding-left:18px;">
+                        <li>Перейдите в <strong>Firebase Console → Firestore → Правила</strong></li>
+                        <li>Вставьте следующие правила:<br>
+                        <code style="display:block;background:var(--bg-input);padding:8px;border-radius:4px;font-size:12px;margin-top:4px;white-space:pre-wrap;">
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -19,3 +358,2268 @@ service cloud.firestore {
     }
   }
 }
+                        </code>
+                        </li>
+                        <li>Нажмите <strong>Опубликовать</strong></li>
+                    </ol>
+                </div>
+                <div class="info-text" style="margin-top:8px;">
+                    <strong>Как получить UID пользователя?</strong> Попросите пользователя нажать на свой UID в меню (рядом с именем) — он скопируется в буфер обмена.
+                </div>
+            </div>
+        </div>
+        
+        <div class="page" id="page-add">
+            <div style="margin-top:6px;margin-bottom:12px;"><button class="btn btn-back" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> Назад</button></div>
+            <div class="add-form-page">
+                <h2><i class="fas fa-server"></i> Добавить сервер</h2>
+                <div class="form-group">
+                    <label>Название сервера * (3-50 символов)</label>
+                    <input type="text" id="serverName" placeholder="Например: Hypixel" maxlength="50" />
+                    <div class="char-counter" id="nameCounter">0/50</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>IP адрес *</label>
+                        <input type="text" id="serverIP" placeholder="mc.hypixel.net" />
+                    </div>
+                    <div class="form-group">
+                        <label>Порт (необязательно)</label>
+                        <input type="number" id="serverPort" placeholder="25565" value="25565" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Discord сервер</label>
+                    <input type="text" id="serverDiscord" placeholder="https://discord.gg/your-invite" />
+                </div>
+                <div class="form-group">
+                    <label>Telegram канал/группа</label>
+                    <input type="text" id="serverTelegram" placeholder="https://t.me/your-channel" />
+                </div>
+                <div class="form-group">
+                    <label>Ссылка на донат</label>
+                    <input type="text" id="serverDonate" placeholder="https://donate.example.com" />
+                </div>
+                <div class="form-group">
+                    <label>Версия Minecraft</label>
+                    <select id="serverVersion">
+                        <option value="auto" selected>Авто (из статуса)</option>
+                        <option value="26.3">26.3</option>
+                        <option value="26.2">26.2</option>
+                        <option value="26.1.2">26.1.2</option>
+                        <option value="26.1.1">26.1.1</option>
+                        <option value="26.1">26.1</option>
+                        <option value="1.21.11">1.21.11</option>
+                        <option value="1.21.10">1.21.10</option>
+                        <option value="1.21.9">1.21.9</option>
+                        <option value="1.21.8">1.21.8</option>
+                        <option value="1.21.7">1.21.7</option>
+                        <option value="1.21.6">1.21.6</option>
+                        <option value="1.21.5">1.21.5</option>
+                        <option value="1.21.4">1.21.4</option>
+                        <option value="1.21.3">1.21.3</option>
+                        <option value="1.21.2">1.21.2</option>
+                        <option value="1.21.1">1.21.1</option>
+                        <option value="1.21">1.21</option>
+                        <option value="1.20.6">1.20.6</option>
+                        <option value="1.20.4">1.20.4</option>
+                        <option value="1.20.2">1.20.2</option>
+                        <option value="1.20.1">1.20.1</option>
+                        <option value="1.20">1.20</option>
+                        <option value="1.19.4">1.19.4</option>
+                        <option value="1.19.3">1.19.3</option>
+                        <option value="1.19.2">1.19.2</option>
+                        <option value="1.19">1.19</option>
+                        <option value="1.18.2">1.18.2</option>
+                        <option value="1.18.1">1.18.1</option>
+                        <option value="1.18">1.18</option>
+                        <option value="1.17.1">1.17.1</option>
+                        <option value="1.17">1.17</option>
+                        <option value="1.16.5">1.16.5</option>
+                        <option value="1.16.4">1.16.4</option>
+                        <option value="1.16.3">1.16.3</option>
+                        <option value="1.16.2">1.16.2</option>
+                        <option value="1.16.1">1.16.1</option>
+                        <option value="1.16">1.16</option>
+                        <option value="1.15.2">1.15.2</option>
+                        <option value="1.15.1">1.15.1</option>
+                        <option value="1.15">1.15</option>
+                        <option value="1.14.4">1.14.4</option>
+                        <option value="1.14.3">1.14.3</option>
+                        <option value="1.14.2">1.14.2</option>
+                        <option value="1.14.1">1.14.1</option>
+                        <option value="1.14">1.14</option>
+                        <option value="1.13.2">1.13.2</option>
+                        <option value="1.13.1">1.13.1</option>
+                        <option value="1.13">1.13</option>
+                        <option value="1.12.2">1.12.2</option>
+                        <option value="1.12.1">1.12.1</option>
+                        <option value="1.12">1.12</option>
+                        <option value="1.11.2">1.11.2</option>
+                        <option value="1.11.1">1.11.1</option>
+                        <option value="1.11">1.11</option>
+                        <option value="1.10.2">1.10.2</option>
+                        <option value="1.10.1">1.10.1</option>
+                        <option value="1.10">1.10</option>
+                        <option value="1.9.4">1.9.4</option>
+                        <option value="1.9.3">1.9.3</option>
+                        <option value="1.9.2">1.9.2</option>
+                        <option value="1.9.1">1.9.1</option>
+                        <option value="1.9">1.9</option>
+                        <option value="1.8.9">1.8.9</option>
+                        <option value="1.8.8">1.8.8</option>
+                        <option value="1.8.7">1.8.7</option>
+                        <option value="1.8.6">1.8.6</option>
+                        <option value="1.8.5">1.8.5</option>
+                        <option value="1.8.4">1.8.4</option>
+                        <option value="1.8.3">1.8.3</option>
+                        <option value="1.8.2">1.8.2</option>
+                        <option value="1.8.1">1.8.1</option>
+                        <option value="1.8">1.8</option>
+                        <option value="1.7.10">1.7.10</option>
+                        <option value="1.7.9">1.7.9</option>
+                        <option value="1.7.2">1.7.2</option>
+                        <option value="1.6.4">1.6.4</option>
+                        <option value="1.5.2">1.5.2</option>
+                        <option value="custom">Другая (введите вручную)</option>
+                    </select>
+                    <input type="text" id="serverVersionCustom" placeholder="Введите версию вручную" style="margin-top:6px;display:none;" />
+                </div>
+                <div class="form-group">
+                    <label>Описание (до 150 символов)</label>
+                    <textarea id="serverDescription" placeholder="Оставьте пустым для автозаполнения MOTD" maxlength="150"></textarea>
+                    <div class="char-counter" id="descCounter">0/150</div>
+                </div>
+                <div class="form-group">
+                    <label>Теги (2-30 символов, макс. 10 тегов)</label>
+                    <div class="tags-input-wrap">
+                        <input type="text" id="tagInput" placeholder="Например: PvP, SkyBlock, Выживание" maxlength="30" />
+                        <button class="btn btn-outline btn-sm" id="addTagBtn">+ Добавить</button>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;" id="tagsContainer"></div>
+                    <div class="char-counter" id="tagCounter">0/10 тегов</div>
+                </div>
+                <div class="form-group">
+                    <label>Аватарка (загрузите с ПК)</label>
+                    <div class="avatar-upload">
+                        <div class="avatar-preview" id="avatarPreview"><span><i class="fas fa-image"></i></span></div>
+                        <div class="avatar-actions">
+                            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                <div class="file-input-wrap" style="position:relative;overflow:hidden;display:inline-block;">
+                                    <button class="btn btn-outline btn-sm"><i class="fas fa-upload"></i> Выбрать файл</button>
+                                    <input type="file" id="avatarFileInput" accept="image/*" style="position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer;" />
+                                </div>
+                                <button class="btn btn-outline btn-sm" style="color:var(--danger-color);border-color:rgba(248,113,113,0.2);" id="clearAvatarBtn"><i class="fas fa-times"></i> Удалить</button>
+                            </div>
+                            <span class="file-name" id="avatarFileName" style="display:block;margin-top:4px;font-size:12px;">Файл не выбран</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" id="submitServerBtn"><i class="fas fa-check"></i> Добавить</button>
+                    <button class="btn btn-outline" onclick="showPage('main')">Отмена</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="page" id="page-edit">
+            <div style="margin-top:6px;margin-bottom:12px;"><button class="btn btn-back" onclick="showPage('myservers')"><i class="fas fa-arrow-left"></i> Назад</button></div>
+            <div class="add-form-page">
+                <h2><i class="fas fa-edit"></i> Редактировать сервер</h2>
+                <input type="hidden" id="editServerId" />
+                <div class="form-group">
+                    <label>Название сервера * (3-50 символов)</label>
+                    <input type="text" id="editServerName" placeholder="Например: Hypixel" maxlength="50" />
+                    <div class="char-counter" id="editNameCounter">0/50</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>IP адрес *</label>
+                        <input type="text" id="editServerIP" placeholder="mc.hypixel.net" />
+                    </div>
+                    <div class="form-group">
+                        <label>Порт</label>
+                        <input type="number" id="editServerPort" placeholder="25565" value="25565" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Discord сервер</label>
+                    <input type="text" id="editServerDiscord" placeholder="https://discord.gg/your-invite" />
+                </div>
+                <div class="form-group">
+                    <label>Telegram канал/группа</label>
+                    <input type="text" id="editServerTelegram" placeholder="https://t.me/your-channel" />
+                </div>
+                <div class="form-group">
+                    <label>Ссылка на донат</label>
+                    <input type="text" id="editServerDonate" placeholder="https://donate.example.com" />
+                </div>
+                <div class="form-group">
+                    <label>Версия Minecraft</label>
+                    <select id="editServerVersion">
+                        <option value="auto">Авто (из статуса)</option>
+                        <option value="26.3">26.3</option>
+                        <option value="26.2">26.2</option>
+                        <option value="26.1.2">26.1.2</option>
+                        <option value="26.1.1">26.1.1</option>
+                        <option value="26.1">26.1</option>
+                        <option value="1.21.11">1.21.11</option>
+                        <option value="1.21.10">1.21.10</option>
+                        <option value="1.21.9">1.21.9</option>
+                        <option value="1.21.8">1.21.8</option>
+                        <option value="1.21.7">1.21.7</option>
+                        <option value="1.21.6">1.21.6</option>
+                        <option value="1.21.5">1.21.5</option>
+                        <option value="1.21.4">1.21.4</option>
+                        <option value="1.21.3">1.21.3</option>
+                        <option value="1.21.2">1.21.2</option>
+                        <option value="1.21.1">1.21.1</option>
+                        <option value="1.21">1.21</option>
+                        <option value="1.20.6">1.20.6</option>
+                        <option value="1.20.4">1.20.4</option>
+                        <option value="1.20.2">1.20.2</option>
+                        <option value="1.20.1">1.20.1</option>
+                        <option value="1.20">1.20</option>
+                        <option value="1.19.4">1.19.4</option>
+                        <option value="1.19.3">1.19.3</option>
+                        <option value="1.19.2">1.19.2</option>
+                        <option value="1.19">1.19</option>
+                        <option value="1.18.2">1.18.2</option>
+                        <option value="1.18.1">1.18.1</option>
+                        <option value="1.18">1.18</option>
+                        <option value="1.17.1">1.17.1</option>
+                        <option value="1.17">1.17</option>
+                        <option value="1.16.5">1.16.5</option>
+                        <option value="1.16.4">1.16.4</option>
+                        <option value="1.16.3">1.16.3</option>
+                        <option value="1.16.2">1.16.2</option>
+                        <option value="1.16.1">1.16.1</option>
+                        <option value="1.16">1.16</option>
+                        <option value="1.15.2">1.15.2</option>
+                        <option value="1.15.1">1.15.1</option>
+                        <option value="1.15">1.15</option>
+                        <option value="1.14.4">1.14.4</option>
+                        <option value="1.14.3">1.14.3</option>
+                        <option value="1.14.2">1.14.2</option>
+                        <option value="1.14.1">1.14.1</option>
+                        <option value="1.14">1.14</option>
+                        <option value="1.13.2">1.13.2</option>
+                        <option value="1.13.1">1.13.1</option>
+                        <option value="1.13">1.13</option>
+                        <option value="1.12.2">1.12.2</option>
+                        <option value="1.12.1">1.12.1</option>
+                        <option value="1.12">1.12</option>
+                        <option value="1.11.2">1.11.2</option>
+                        <option value="1.11.1">1.11.1</option>
+                        <option value="1.11">1.11</option>
+                        <option value="1.10.2">1.10.2</option>
+                        <option value="1.10.1">1.10.1</option>
+                        <option value="1.10">1.10</option>
+                        <option value="1.9.4">1.9.4</option>
+                        <option value="1.9.3">1.9.3</option>
+                        <option value="1.9.2">1.9.2</option>
+                        <option value="1.9.1">1.9.1</option>
+                        <option value="1.9">1.9</option>
+                        <option value="1.8.9">1.8.9</option>
+                        <option value="1.8.8">1.8.8</option>
+                        <option value="1.8.7">1.8.7</option>
+                        <option value="1.8.6">1.8.6</option>
+                        <option value="1.8.5">1.8.5</option>
+                        <option value="1.8.4">1.8.4</option>
+                        <option value="1.8.3">1.8.3</option>
+                        <option value="1.8.2">1.8.2</option>
+                        <option value="1.8.1">1.8.1</option>
+                        <option value="1.8">1.8</option>
+                        <option value="1.7.10">1.7.10</option>
+                        <option value="1.7.9">1.7.9</option>
+                        <option value="1.7.2">1.7.2</option>
+                        <option value="1.6.4">1.6.4</option>
+                        <option value="1.5.2">1.5.2</option>
+                        <option value="custom">Другая (введите вручную)</option>
+                    </select>
+                    <input type="text" id="editServerVersionCustom" placeholder="Введите версию вручную" style="margin-top:6px;display:none;" />
+                </div>
+                <div class="form-group">
+                    <label>Описание (до 150 символов)</label>
+                    <textarea id="editServerDescription" placeholder="Оставьте пустым для автозаполнения MOTD" maxlength="150"></textarea>
+                    <div class="char-counter" id="editDescCounter">0/150</div>
+                </div>
+                <div class="form-group">
+                    <label>Теги (2-30 символов, макс. 10 тегов)</label>
+                    <div class="tags-input-wrap">
+                        <input type="text" id="editTagInput" placeholder="Например: PvP, SkyBlock, Выживание" maxlength="30" />
+                        <button class="btn btn-outline btn-sm" id="editAddTagBtn">+ Добавить</button>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;" id="editTagsContainer"></div>
+                    <div class="char-counter" id="editTagCounter">0/10 тегов</div>
+                </div>
+                <div class="form-group">
+                    <label>Аватарка (загрузите с ПК)</label>
+                    <div class="avatar-upload">
+                        <div class="avatar-preview" id="editAvatarPreview"><span><i class="fas fa-image"></i></span></div>
+                        <div class="avatar-actions">
+                            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                <div class="file-input-wrap" style="position:relative;overflow:hidden;display:inline-block;">
+                                    <button class="btn btn-outline btn-sm"><i class="fas fa-upload"></i> Выбрать файл</button>
+                                    <input type="file" id="editAvatarFileInput" accept="image/*" style="position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer;" />
+                                </div>
+                                <button class="btn btn-outline btn-sm" style="color:var(--danger-color);border-color:rgba(248,113,113,0.2);" id="editClearAvatarBtn"><i class="fas fa-times"></i> Удалить</button>
+                            </div>
+                            <span class="file-name" id="editAvatarFileName" style="display:block;margin-top:4px;font-size:12px;">Файл не выбран</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-success" id="editServerBtn"><i class="fas fa-save"></i> Сохранить</button>
+                    <button class="btn btn-outline" onclick="showPage('myservers')">Отмена</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="page" id="page-stats">
+            <div class="stats-page">
+                <a class="back-link" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> На главную</a>
+                <h2 id="statsServerName">Название сервера</h2>
+                <div class="stats-sub" id="statsServerAddr">IP: порт</div>
+                <div class="stats-detail">
+                    <div class="stat-item"><div class="label">Версия</div><div class="value" id="statsVersion">—</div></div>
+                    <div class="stat-item"><div class="label">Голосов</div><div class="value" id="statsVotes">0</div></div>
+                    <div class="stat-item"><div class="label">Онлайн сейчас</div><div class="value" id="statsOnline">0</div></div>
+                    <div class="stat-item"><div class="label">Максимум игроков</div><div class="value" id="statsMax">0</div></div>
+                </div>
+                <div style="margin-top:8px;"><strong>Описание:</strong> <span id="statsDescription">—</span></div>
+                <div style="margin-top:8px;"><strong>Теги:</strong> <span id="statsTags">—</span></div>
+                <div style="margin-top:8px;"><strong>Discord:</strong> <span id="statsDiscord">—</span></div>
+                <div style="margin-top:8px;"><strong>Telegram:</strong> <span id="statsTelegram">—</span></div>
+                <div style="margin-top:8px;"><strong>Донат:</strong> <span id="statsDonate">—</span></div>
+                <div style="margin-top:16px;"><strong>График онлайна за последние 24 часа</strong></div>
+                <canvas id="statsChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="page" id="page-login">
+            <div style="margin-top:6px;margin-bottom:12px;"><button class="btn btn-back" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> Назад</button></div>
+            <div class="auth-page">
+                <h2>Вход</h2>
+                <p class="auth-sub">Войдите в аккаунт, чтобы голосовать и добавлять сервера</p>
+                <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="example@mail.com" /></div>
+                <div class="form-group"><label>Пароль</label><input type="password" id="loginPassword" placeholder="••••••••" /></div>
+                <button class="auth-btn" id="loginBtn">Войти</button>
+                <div class="auth-error" id="loginError"></div>
+                <div class="auth-links">Нет аккаунта? <a onclick="showPage('register')">Зарегистрироваться</a></div>
+                <a class="back-link" onclick="showPage('main')">← Вернуться на главную</a>
+            </div>
+        </div>
+        <div class="page" id="page-register">
+            <div style="margin-top:6px;margin-bottom:12px;"><button class="btn btn-back" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> Назад</button></div>
+            <div class="auth-page">
+                <h2>Регистрация</h2>
+                <p class="auth-sub">Создайте аккаунт для доступа ко всем функциям</p>
+                <div class="form-group"><label>Email</label><input type="email" id="registerEmail" placeholder="example@mail.com" /></div>
+                <div class="form-group"><label>Пароль (минимум 6 символов)</label><input type="password" id="registerPassword" placeholder="••••••••" /></div>
+                <div class="form-group"><label>Повторите пароль</label><input type="password" id="registerPasswordConfirm" placeholder="••••••••" /></div>
+                <button class="auth-btn" id="registerBtn">Зарегистрироваться</button>
+                <div class="auth-error" id="registerError"></div>
+                <div class="auth-success" id="registerSuccess"></div>
+                <div class="auth-links">Уже есть аккаунт? <a onclick="showPage('login')">Войти</a></div>
+                <a class="back-link" onclick="showPage('main')">← Вернуться на главную</a>
+            </div>
+        </div>
+        <div class="page" id="page-verify">
+            <div style="margin-top:6px;margin-bottom:12px;"><button class="btn btn-back" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> Назад</button></div>
+            <div class="verify-page">
+                <h2>Подтверждение почты</h2>
+                <p class="verify-sub" id="verifySubText">На вашу почту отправлен 6-значный код. Введите его ниже.</p>
+                <div class="form-group"><label>Код подтверждения</label><input type="text" id="verifyCode" placeholder="••••••" maxlength="6" /></div>
+                <button class="verify-btn" id="verifyBtn">Подтвердить</button>
+                <div class="verify-error" id="verifyError"></div>
+                <div class="verify-success" id="verifySuccess"></div>
+                <div class="resend-link">Не пришло письмо? <a id="resendVerifyLink">Отправить повторно</a></div>
+                <a class="back-link" onclick="showPage('main')">← Вернуться на главную</a>
+            </div>
+        </div>
+        <div class="page" id="page-contacts">
+            <div class="legal-page">
+                <a class="back-link" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> На главную</a>
+                <h1>Контакты</h1>
+                <p>Свяжитесь с нами по любым вопросам:</p>
+                <ul><li><strong>Email:</strong> support@krezzmonitor.ru</li><li><strong>Telegram:</strong> @krezzmonitor</li><li><strong>Discord:</strong> https://discord.gg/krezzmonitor</li></ul>
+                <p>Мы стараемся отвечать в течение 24 часов в рабочие дни.</p>
+            </div>
+        </div>
+        <div class="page" id="page-rules">
+            <div class="legal-page">
+                <a class="back-link" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> На главную</a>
+                <h1>Правила пользования сервисом KreZzMonitor</h1>
+                <p><strong>1. Общие положения</strong><br>1.1. Настоящие правила регулируют отношения между администрацией сайта KreZzMonitor и пользователями.<br>1.2. Используя сайт, вы соглашаетесь с данными правилами.</p>
+                <p><strong>2. Добавление серверов</strong><br>2.1. Добавлять можно только серверы Minecraft, принадлежащие вам или с разрешения владельца.<br>2.2. Запрещено добавлять серверы с незаконным контентом, читами, оскорбительными названиями.<br>2.3. Администрация оставляет за собой право удалять серверы без объяснения причин.</p>
+                <p><strong>3. Голосование</strong><br>3.1. Голосовать могут только зарегистрированные пользователи (в будущем).<br>3.2. Запрещены накрутки голосов с использованием ботов или прокси.</p>
+                <p><strong>4. Ответственность</strong><br>4.1. Администрация не несёт ответственности за контент серверов, добавленных пользователями.<br>4.2. Пользователь самостоятельно отвечает за сохранность своих данных.</p>
+                <p><strong>5. Изменения</strong><br>5.1. Правила могут быть изменены в любое время. Изменения вступают в силу с момента публикации.</p>
+                <h2>Дополнительные правила</h2>
+                <p><strong>1. Добавление сервера</strong><br>1.1. Вы удостоверяетесь, что в описании и MOTD вашего сервера нет запрещённых вещей.<br>Наказание: снос сервера и варн на аккаунт.<br>1.2. Вы соглашаетесь с тем, что вы можете остаться в бездне.</p>
+                <p><strong>2. Отношение к администрации</strong><br>2.1. Оскорбление администрации (в любом виде, даже в описании сервера и MOTD).<br>Наказание: снос аккаунта и запись в историю почты.<br>2.2. Администрация может снести ваш аккаунт по корректной причине, но вы можете обратиться в поддержку, и вам могут помочь.<br>Наказание для администрации: месяц без еды и 3 дня без воды в подвале.</p>
+                <p><strong>3. Аккаунты</strong><br>3.1. При создании аккаунта вы должны указать приличный ник и аватарку.<br>Наказание при нарушении: снос аккаунта (если вас заметят модераторы).</p>
+                <p><strong>4. Очень важный пункт</strong><br>4.1. Администрация может менять правила когда угодно, но мы постараемся вас уведомить на почту и на аккаунт.</p>
+            </div>
+        </div>
+        <div class="page" id="page-agreement">
+            <div class="legal-page">
+                <a class="back-link" onclick="showPage('main')"><i class="fas fa-arrow-left"></i> На главную</a>
+                <h1>Пользовательское соглашение</h1>
+                <p><strong>1. Предмет соглашения</strong><br>1.1. Настоящее соглашение регулирует использование сайта KreZzMonitor (далее – «Сайт»).<br>1.2. Использование Сайта означает полное и безоговорочное принятие условий.</p>
+                <p><strong>2. Права и обязанности сторон</strong><br>2.1. Пользователь обязуется предоставлять достоверную информацию о серверах.<br>2.2. Администрация обязуется обеспечивать работоспособность Сайта и защиту данных.</p>
+                <p><strong>3. Обработка персональных данных</strong><br>3.1. Сайт собирает только IP-адрес пользователя для предотвращения злоупотреблений.<br>3.2. Дополнительные данные (email, имя) могут запрашиваться только при регистрации.</p>
+                <p><strong>4. Интеллектуальная собственность</strong><br>4.1. Весь контент Сайта является собственностью администрации, если не указано иное.<br>4.2. Запрещено копирование элементов дизайна без разрешения.</p>
+                <p><strong>5. Заключительные положения</strong><br>5.1. Соглашение вступает в силу с момента начала использования Сайта.<br>5.2. Администрация вправе изменять соглашение без предварительного уведомления.</p>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="footer-container">
+            <div>&copy; KreZzMonitor. Все права защищены. Версия 1.1.4.2</div>
+            <div class="footer-links">
+                <a onclick="showPage('contacts')">Контакты</a>
+                <a href="https://discord.gg/hTdb4ZyBzS" target="_blank"><i class="fab fa-discord"></i> Discord</a>
+                <a href="https://t.me/+6kJP6t-_emUxYzdi" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
+                <a onclick="showPage('rules')">Правила</a>
+                <a onclick="showPage('agreement')">Соглашение</a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // ----- ИНИЦИАЛИЗАЦИЯ FIREBASE -----
+        const firebaseConfig = {
+            apiKey: "AIzaSyDhdICxEq951HtNtw2XUbJmPya8rcVDGHA",
+            authDomain: "reherherherh.firebaseapp.com",
+            projectId: "reherherherh",
+            storageBucket: "reherherherh.firebasestorage.app",
+            messagingSenderId: "381661685916",
+            appId: "1:381661685916:web:8bcec48785a4da3f8a6559",
+            measurementId: "G-8CX69LHMKE"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        emailjs.init("0Sq4eL0-lIGxToR47");
+        const EMAILJS_SERVICE = "service_2262rnd";
+        const EMAILJS_TEMPLATE = "template_kdy80p9";
+        let pendingVerifyEmail = null;
+        let pendingVerifyUid = null;
+        let verificationCode = null;
+        let currentUser = null;
+
+        // ----- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ -----
+        const adjectives = ['Slitther', 'Shadow', 'Crystal', 'Dark', 'Light', 'Storm', 'Blaze', 'Frost', 'Thunder', 'Night', 'Silver', 'Golden', 'Mystic', 'Phantom', 'Raven', 'Wolf', 'Dragon', 'Phoenix', 'Titan', 'Venom'];
+        const nouns = ['Fish', 'Wolf', 'Dragon', 'Fox', 'Hawk', 'Tiger', 'Bear', 'Lion', 'Eagle', 'Shark', 'Snake', 'Spider', 'Bat', 'Falcon', 'Puma', 'Viper', 'Cobra', 'Raven', 'Wolf', 'Panther'];
+        function generateRandomNick() {
+            const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const noun = nouns[Math.floor(Math.random() * nouns.length)];
+            const num = Math.floor(Math.random() * 1000);
+            return adj + noun + num;
+        }
+
+        function updateUIForUser(user) {
+            const a = document.getElementById('authButtons');
+            const b = document.getElementById('userInfo');
+            const c = document.getElementById('userNameText');
+            const d = document.getElementById('userAvatar');
+            const myNav = document.getElementById('myServersNav');
+            const adminNav = document.getElementById('adminNav');
+            const uidDisplay = document.getElementById('userUidDisplay');
+            if (user) {
+                currentUser = user;
+                a.style.display = 'none';
+                b.style.display = 'flex';
+                const displayName = user.displayName || user.email || 'Пользователь';
+                c.textContent = displayName;
+                d.src = user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(displayName) + '&background=2980b9&color=fff';
+                myNav.style.display = 'flex';
+                // Показываем UID и делаем его кликабельным для копирования
+                uidDisplay.textContent = user.uid.substring(0, 8) + '…';
+                uidDisplay.title = 'Ваш UID: ' + user.uid + ' (нажмите для копирования)';
+                uidDisplay.style.cursor = 'pointer';
+                uidDisplay.onclick = function() {
+                    copyToClipboard(user.uid);
+                };
+                // Проверяем роль для показа админ-панели
+                getUserRole(user.uid).then(role => {
+                    if (role === 'admin') {
+                        adminNav.style.display = 'flex';
+                    } else {
+                        adminNav.style.display = 'none';
+                    }
+                });
+            } else {
+                currentUser = null;
+                a.style.display = 'flex';
+                b.style.display = 'none';
+                myNav.style.display = 'none';
+                adminNav.style.display = 'none';
+                uidDisplay.textContent = '';
+                uidDisplay.onclick = null;
+            }
+        }
+        auth.onAuthStateChanged(user => updateUIForUser(user));
+
+        function generateVerificationCode() { return Math.floor(100000 + Math.random() * 900000).toString(); }
+        async function sendVerificationEmail(email, code) {
+            try {
+                await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, { email, code });
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+        async function isUserVerified(uid) {
+            try {
+                const d = await db.collection('users').doc(uid).get();
+                return d.exists && d.data().verified === true;
+            } catch (e) { return false; }
+        }
+        async function setUserVerified(uid) {
+            try {
+                await db.collection('users').doc(uid).set({ verified: true }, { merge: true });
+                return true;
+            } catch (e) { return false; }
+        }
+        async function getUserRole(uid) {
+            try {
+                const d = await db.collection('users').doc(uid).get();
+                if (d.exists) {
+                    const data = d.data();
+                    return data.role || 'user';
+                }
+                return 'user';
+            } catch (e) { return 'user'; }
+        }
+        async function getUserWarns(uid) {
+            try {
+                const d = await db.collection('users').doc(uid).get();
+                if (d.exists) {
+                    const data = d.data();
+                    return data.warns || 0;
+                }
+                return 0;
+            } catch (e) { return 0; }
+        }
+        async function addWarnToUser(uid) {
+            try {
+                const warns = await getUserWarns(uid);
+                const newWarns = warns + 1;
+                await db.collection('users').doc(uid).update({ warns: newWarns });
+                if (newWarns >= 3) {
+                    await db.collection('users').doc(uid).update({ banned: true });
+                    return { warns: newWarns, banned: true };
+                }
+                return { warns: newWarns, banned: false };
+            } catch (e) { return null; }
+        }
+        async function isUserBanned(uid) {
+            try {
+                const d = await db.collection('users').doc(uid).get();
+                if (d.exists) {
+                    const data = d.data();
+                    return data.banned === true;
+                }
+                return false;
+            } catch (e) { return false; }
+        }
+
+        // ----- АДМИН-ФУНКЦИИ -----
+        async function setUserRole(uid, role) {
+            if (!currentUser) { alert('Вы не авторизованы'); return; }
+            const myRole = await getUserRole(currentUser.uid);
+            if (myRole !== 'admin') { alert('Только администратор может управлять ролями'); return; }
+            if (!uid) { alert('Введите UID пользователя'); return; }
+            try {
+                const userDoc = await db.collection('users').doc(uid).get();
+                if (!userDoc.exists) { alert('Пользователь с таким UID не найден'); return; }
+                await db.collection('users').doc(uid).update({ role: role });
+                alert(`✅ Роль пользователя ${uid} изменена на ${role}`);
+                document.getElementById('adminResult').innerHTML = `<span style="color:var(--success-color);">✅ Роль обновлена: ${uid} → ${role}</span>`;
+            } catch (e) {
+                console.error('Ошибка при обновлении роли:', e);
+                let message = '❌ Ошибка: ' + e.message;
+                if (e.code === 'permission-denied') {
+                    message += '\n\n⚠️ Недостаточно прав для изменения роли. Настройте правила Firestore (см. инструкцию ниже в админ-панели).';
+                }
+                alert(message);
+                document.getElementById('adminResult').innerHTML = `<span style="color:var(--danger-color);">❌ ${message.replace(/\n/g, '<br>')}</span>`;
+            }
+        }
+
+        document.getElementById('adminSetModeratorBtn').addEventListener('click', function() {
+            const uid = document.getElementById('adminUidInput').value.trim();
+            setUserRole(uid, 'moderator');
+        });
+        document.getElementById('adminRemoveModeratorBtn').addEventListener('click', function() {
+            const uid = document.getElementById('adminUidInput').value.trim();
+            setUserRole(uid, 'user');
+        });
+        document.getElementById('adminCheckPermissionsBtn').addEventListener('click', async function() {
+            if (!currentUser) { alert('Вы не авторизованы'); return; }
+            const role = await getUserRole(currentUser.uid);
+            const isAdmin = role === 'admin';
+            alert(`Ваша роль: ${role}\nВы ${isAdmin ? '' : 'НЕ '}администратор.\n\nЕсли вы администратор, но не можете менять роли, проверьте правила Firestore.`);
+        });
+
+        // Обновление информации в админ-панели при открытии
+        function updateAdminPanel() {
+            if (!currentUser) return;
+            const uid = currentUser.uid;
+            document.getElementById('adminCurrentUser').textContent = currentUser.displayName || currentUser.email || '—';
+            document.getElementById('adminCurrentUid').textContent = uid;
+            getUserRole(uid).then(role => {
+                document.getElementById('adminCurrentRole').textContent = role;
+            });
+        }
+
+        // ----- МОДЕРАТОРСКИЕ ФУНКЦИИ (ОБНОВЛЕНЫ) -----
+        // НОВОЕ: добавил параметр addWarn (по умолчанию false)
+        async function deleteServerAsModerator(serverId, addWarn = false) {
+            if (!currentUser) { alert('⚠️ Необходимо войти в аккаунт'); return; }
+            const role = await getUserRole(currentUser.uid);
+            if (role !== 'moderator' && role !== 'admin') { alert('❌ У вас нет прав модератора'); return; }
+            if (!confirm(`Вы уверены, что хотите удалить этот сервер${addWarn ? ' и выдать варн владельцу' : ''}?`)) return;
+            try {
+                const serverDoc = await db.collection('servers').doc(serverId).get();
+                if (!serverDoc.exists) { alert('❌ Сервер не найден'); return; }
+                const serverData = serverDoc.data();
+                if (addWarn && serverData.addedByUserId) {
+                    const result = await addWarnToUser(serverData.addedByUserId);
+                    if (result) {
+                        if (result.banned) {
+                            alert(`✅ Сервер удалён. Пользователь получил варн (${result.warns}/3) и заблокирован!`);
+                        } else {
+                            alert(`✅ Сервер удалён. Пользователь получил варн (${result.warns}/3).`);
+                        }
+                    } else {
+                        alert('⚠️ Сервер удалён, но не удалось выдать варн.');
+                    }
+                }
+                await db.collection('servers').doc(serverId).delete();
+                if (!addWarn) alert('✅ Сервер удалён без варна.');
+                applyFiltersAndRender();
+                loadMyServers();
+            } catch (e) { alert('❌ Ошибка: ' + e.message); }
+        }
+
+        async function toggleServerAbyss(serverId) {
+            if (!currentUser) { alert('⚠️ Необходимо войти в аккаунт'); return; }
+            const role = await getUserRole(currentUser.uid);
+            if (role !== 'moderator' && role !== 'admin') { alert('❌ У вас нет прав модератора'); return; }
+            try {
+                const serverDoc = await db.collection('servers').doc(serverId).get();
+                if (!serverDoc.exists) { alert('❌ Сервер не найден'); return; }
+                const serverData = serverDoc.data();
+                const newAbyssState = !serverData.inAbyss;
+                await db.collection('servers').doc(serverId).update({ inAbyss: newAbyssState });
+                alert(newAbyssState ? '✅ Сервер отправлен в бездну' : '✅ Сервер вернули из бездны');
+                applyFiltersAndRender();
+                loadMyServers();
+            } catch (e) { alert('❌ Ошибка: ' + e.message); }
+        }
+
+        async function toggleServerOfficial(serverId) {
+            if (!currentUser) { alert('⚠️ Необходимо войти в аккаунт'); return; }
+            const role = await getUserRole(currentUser.uid);
+            if (role !== 'moderator' && role !== 'admin') { alert('❌ У вас нет прав модератора'); return; }
+            try {
+                const serverDoc = await db.collection('servers').doc(serverId).get();
+                if (!serverDoc.exists) { alert('❌ Сервер не найден'); return; }
+                const serverData = serverDoc.data();
+                const newOfficialState = !serverData.isOfficial;
+                await db.collection('servers').doc(serverId).update({ isOfficial: newOfficialState });
+                alert(newOfficialState ? '✅ Сервер помечен как официальный' : '✅ Сервер больше не официальный');
+                applyFiltersAndRender();
+                loadMyServers();
+            } catch (e) { alert('❌ Ошибка: ' + e.message); }
+        }
+
+        // ----- ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений, кроме отрисовки мод-кнопок) -----
+        function showVerifyPage(email, uid) {
+            pendingVerifyEmail = email;
+            pendingVerifyUid = uid;
+            verificationCode = generateVerificationCode();
+            document.getElementById('verifySubText').textContent = 'На вашу почту ' + email + ' отправлен 6-значный код. Введите его ниже.';
+            document.getElementById('verifyError').textContent = '';
+            document.getElementById('verifySuccess').textContent = '';
+            document.getElementById('verifyCode').value = '';
+            showPage('verify');
+            sendVerificationEmail(email, verificationCode).then(s => {
+                if (!s) document.getElementById('verifyError').textContent = '❌ Не удалось отправить письмо. Попробуйте повторно.';
+            });
+        }
+
+        document.getElementById('verifyBtn').addEventListener('click', async function() {
+            const code = document.getElementById('verifyCode').value.trim();
+            const err = document.getElementById('verifyError');
+            const succ = document.getElementById('verifySuccess');
+            err.textContent = '';
+            succ.textContent = '';
+            if (!code || code.length !== 6) { err.textContent = '❌ Введите 6-значный код'; return; }
+            if (code !== verificationCode) { err.textContent = '❌ Неверный код. Попробуйте ещё раз.'; return; }
+            this.disabled = true;
+            this.textContent = '⏳ Проверка...';
+            try {
+                if (await setUserVerified(pendingVerifyUid)) {
+                    succ.textContent = '✅ Почта подтверждена! Теперь вы можете войти.';
+                    await auth.signOut();
+                    setTimeout(() => {
+                        showPage('login');
+                        document.getElementById('loginEmail').value = pendingVerifyEmail || '';
+                        document.getElementById('verifyCode').value = '';
+                        pendingVerifyEmail = null;
+                        pendingVerifyUid = null;
+                        verificationCode = null;
+                    }, 1500);
+                } else {
+                    err.textContent = '❌ Ошибка сохранения статуса. Попробуйте позже.';
+                }
+            } catch (e) {
+                err.textContent = '❌ Ошибка: ' + e.message;
+            } finally {
+                this.disabled = false;
+                this.textContent = 'Подтвердить';
+            }
+        });
+
+        document.getElementById('resendVerifyLink').addEventListener('click', async function(e) {
+            e.preventDefault();
+            const err = document.getElementById('verifyError');
+            const succ = document.getElementById('verifySuccess');
+            err.textContent = '';
+            succ.textContent = '';
+            if (!pendingVerifyEmail) { err.textContent = '❌ Нет активной сессии подтверждения.'; return; }
+            verificationCode = generateVerificationCode();
+            const ok = await sendVerificationEmail(pendingVerifyEmail, verificationCode);
+            ok ? succ.textContent = '✅ Новый код отправлен на почту!' : err.textContent = '❌ Не удалось отправить письмо. Попробуйте позже.';
+        });
+
+        // Регистрация
+        document.getElementById('registerBtn').addEventListener('click', async function() {
+            const email = document.getElementById('registerEmail').value.trim();
+            const pass = document.getElementById('registerPassword').value;
+            const conf = document.getElementById('registerPasswordConfirm').value;
+            const err = document.getElementById('registerError');
+            const succ = document.getElementById('registerSuccess');
+            err.textContent = '';
+            succ.textContent = '';
+            if (!email || !pass || !conf) { err.textContent = '❌ Заполните все поля'; return; }
+            if (pass.length < 6) { err.textContent = '❌ Пароль должен быть минимум 6 символов'; return; }
+            if (pass !== conf) { err.textContent = '❌ Пароли не совпадают'; return; }
+
+            const randomNick = generateRandomNick();
+
+            this.disabled = true;
+            this.textContent = '⏳ Регистрация...';
+            try {
+                const user = await auth.createUserWithEmailAndPassword(email, pass);
+                await user.user.updateProfile({ displayName: randomNick });
+                let role = 'user';
+                let verified = false;
+                if (email === 'gurinnikita02@gmail.com') {
+                    role = 'moderator';
+                    verified = false;
+                } else if (email === 'analitik@krezzmonitor.github.io') {
+                    role = 'admin';
+                    verified = true;
+                }
+                await db.collection('users').doc(user.user.uid).set({
+                    displayName: randomNick,
+                    email: email,
+                    verified: verified,
+                    role: role,
+                    warns: 0,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                if (role === 'admin') {
+                    succ.textContent = '✅ Аккаунт администратора создан! Вы автоматически вошли.';
+                    await auth.signOut();
+                    await auth.signInWithEmailAndPassword(email, pass);
+                    updateUIForUser(auth.currentUser);
+                    setTimeout(() => showPage('main'), 500);
+                    this.disabled = false;
+                    this.textContent = 'Зарегистрироваться';
+                    return;
+                }
+
+                succ.textContent = '✅ Аккаунт создан! Ваш ник: ' + randomNick + '. Подтвердите почту.';
+                await auth.signOut();
+                showVerifyPage(email, user.user.uid);
+            } catch (e) {
+                let msg = '❌ Ошибка регистрации: ';
+                switch (e.code) {
+                    case 'auth/email-already-in-use':
+                        msg += 'Этот email уже используется';
+                        break;
+                    case 'auth/invalid-email':
+                        msg += 'Некорректный email';
+                        break;
+                    case 'auth/weak-password':
+                        msg += 'Слишком слабый пароль';
+                        break;
+                    default:
+                        msg += e.message;
+                }
+                err.textContent = msg;
+            } finally {
+                this.disabled = false;
+                this.textContent = 'Зарегистрироваться';
+            }
+        });
+
+        // Вход
+        document.getElementById('loginBtn').addEventListener('click', async function() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass = document.getElementById('loginPassword').value;
+            const err = document.getElementById('loginError');
+            err.textContent = '';
+            if (!email || !pass) { err.textContent = '❌ Заполните все поля'; return; }
+            this.disabled = true;
+            this.textContent = '⏳ Вход...';
+            try {
+                const user = await auth.signInWithEmailAndPassword(email, pass);
+                if (await isUserBanned(user.user.uid)) {
+                    await auth.signOut();
+                    err.textContent = '❌ Ваш аккаунт заблокирован за нарушения (3+ варна). Обратитесь в поддержку.';
+                    this.disabled = false;
+                    this.textContent = 'Войти';
+                    return;
+                }
+                const role = await getUserRole(user.user.uid);
+                const verified = await isUserVerified(user.user.uid);
+                if (!verified && role !== 'admin') {
+                    await auth.signOut();
+                    err.textContent = '❌ Почта не подтверждена. Проверьте почту или запросите код повторно.';
+                    showVerifyPage(email, user.user.uid);
+                    this.disabled = false;
+                    this.textContent = 'Войти';
+                    return;
+                }
+                updateUIForUser(user.user);
+                setTimeout(() => showPage('main'), 500);
+            } catch (e) {
+                let msg = '❌ Ошибка входа: ';
+                switch (e.code) {
+                    case 'auth/user-not-found':
+                        msg += 'Пользователь не найден';
+                        break;
+                    case 'auth/wrong-password':
+                        msg += 'Неверный пароль';
+                        break;
+                    case 'auth/invalid-email':
+                        msg += 'Некорректный email';
+                        break;
+                    case 'auth/user-disabled':
+                        msg += 'Аккаунт заблокирован';
+                        break;
+                    default:
+                        msg += e.message;
+                }
+                err.textContent = msg;
+            } finally {
+                this.disabled = false;
+                this.textContent = 'Войти';
+            }
+        });
+
+        function logoutUser() {
+            auth.signOut().then(() => {
+                updateUIForUser(null);
+                showPage('main');
+            });
+        }
+
+        // ----- ОТКРЫТИЕ СТРАНИЦ И ФУНКЦИЯ openStats -----
+        let currentStatsServerId = null;
+
+        function openStats(id) {
+            currentStatsServerId = id;
+            showPage('stats');
+        }
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + id).classList.add('active');
+            if (id === 'main') { applyFiltersAndRender(); generateVersionTags(); }
+            if (id === 'add') { generateCaptcha(); document.getElementById('captchaInput').value = ''; }
+            if (id === 'stats' && currentStatsServerId) loadServerStats(currentStatsServerId);
+            if (id === 'myservers') { loadMyServers(); }
+            if (id === 'admin') { updateAdminPanel(); }
+            if (id === 'login' || id === 'register') {
+                document.getElementById('loginError').textContent = '';
+                document.getElementById('registerError').textContent = '';
+                document.getElementById('registerSuccess').textContent = '';
+            }
+        }
+
+        // ----- ТЕМА -----
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = themeToggle.querySelector('i');
+
+        function setTheme(t) {
+            if (t === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-theme');
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        setTheme(localStorage.getItem('theme') || 'light');
+        themeToggle.addEventListener('click', () => {
+            setTheme(document.body.classList.contains('dark-theme') ? 'light' : 'dark');
+        });
+
+        // ----- СПЛЕШ -----
+        setTimeout(() => {
+            const s = document.getElementById('splashScreen');
+            if (s) {
+                s.style.opacity = '0';
+                setTimeout(() => { s.style.display = 'none'; }, 600);
+            }
+        }, 2000);
+
+        // ----- РЕКЛАМА (закрытие) -----
+        const sideAd = document.getElementById('sideAd');
+        const sideAdClose = document.getElementById('sideAdClose');
+        if (localStorage.getItem('sideAdClosed') === '1' && sideAd) {
+            sideAd.classList.add('hidden');
+            sideAd.style.display = 'none';
+        } else {
+            if (sideAd) {
+                sideAd.classList.remove('hidden');
+                sideAd.style.display = 'block';
+            }
+        }
+        if (sideAdClose) {
+            sideAdClose.addEventListener('click', () => {
+                if (sideAd) {
+                    sideAd.classList.add('hidden');
+                    sideAd.style.display = 'none';
+                    localStorage.setItem('sideAdClosed', '1');
+                }
+            });
+        }
+
+        // ----- КАПЧА -----
+        let correctAnswer = 0;
+
+        function generateCaptcha() {
+            const a = Math.floor(Math.random() * 10) + 1;
+            const b = Math.floor(Math.random() * 10) + 1;
+            correctAnswer = a + b;
+            const el = document.querySelector('.captcha-question');
+            if (el) el.textContent = a + ' + ' + b + ' = ?';
+        }
+        const captchaGroup = document.createElement('div');
+        captchaGroup.className = 'form-group';
+        captchaGroup.innerHTML = '<label>Подтверждение (капча)</label><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span class="captcha-question" style="font-size:18px;font-weight:600;background:var(--bg-input);padding:6px 14px;border-radius:40px;">5 + 3 = ?</span><input type="number" id="captchaInput" placeholder="Ответ" style="width:100px;flex:0 1 auto;" /></div>';
+        const formActions = document.querySelector('.add-form-page .form-actions');
+        if (formActions) formActions.parentNode.insertBefore(captchaGroup, formActions);
+        generateCaptcha();
+
+        // ----- ОСНОВНЫЕ ПЕРЕМЕННЫЕ И ФУНКЦИИ -----
+        let servers = [];
+        let tags = [];
+        let unsubscribe = null;
+        let avatarDataURL = null;
+        let currentPage = 1;
+        const PER_PAGE = 8;
+        let votedServers = {};
+        let votingCooldown = false;
+        let statsUnsubscribe = null;
+        let currentSort = localStorage.getItem('serverSort') || 'new';
+        const serversContainer = document.getElementById('serversContainer');
+        const paginationEl = document.getElementById('pagination');
+        const serverName = document.getElementById('serverName');
+        const serverIP = document.getElementById('serverIP');
+        const serverPort = document.getElementById('serverPort');
+        const serverDiscord = document.getElementById('serverDiscord');
+        const serverTelegram = document.getElementById('serverTelegram');
+        const serverDonate = document.getElementById('serverDonate');
+        const serverVersionSelect = document.getElementById('serverVersion');
+        const serverVersionCustom = document.getElementById('serverVersionCustom');
+        const serverDescription = document.getElementById('serverDescription');
+        const tagInput = document.getElementById('tagInput');
+        const addTagBtn = document.getElementById('addTagBtn');
+        const tagsContainer = document.getElementById('tagsContainer');
+        const avatarFileInput = document.getElementById('avatarFileInput');
+        const avatarFileName = document.getElementById('avatarFileName');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const clearAvatarBtn = document.getElementById('clearAvatarBtn');
+        const submitBtn = document.getElementById('submitServerBtn');
+        const nameCounter = document.getElementById('nameCounter');
+        const descCounter = document.getElementById('descCounter');
+        const tagCounter = document.getElementById('tagCounter');
+        let activeVersionFilter = 'all';
+        const MAX_TAGS = 10;
+
+        // ---- Редактирование ----
+        const editServerId = document.getElementById('editServerId');
+        const editServerName = document.getElementById('editServerName');
+        const editServerIP = document.getElementById('editServerIP');
+        const editServerPort = document.getElementById('editServerPort');
+        const editServerDiscord = document.getElementById('editServerDiscord');
+        const editServerTelegram = document.getElementById('editServerTelegram');
+        const editServerDonate = document.getElementById('editServerDonate');
+        const editServerVersion = document.getElementById('editServerVersion');
+        const editServerVersionCustom = document.getElementById('editServerVersionCustom');
+        const editServerDescription = document.getElementById('editServerDescription');
+        const editTagInput = document.getElementById('editTagInput');
+        const editAddTagBtn = document.getElementById('editAddTagBtn');
+        const editTagsContainer = document.getElementById('editTagsContainer');
+        const editAvatarFileInput = document.getElementById('editAvatarFileInput');
+        const editAvatarFileName = document.getElementById('editAvatarFileName');
+        const editAvatarPreview = document.getElementById('editAvatarPreview');
+        const editClearAvatarBtn = document.getElementById('editClearAvatarBtn');
+        const editServerBtn = document.getElementById('editServerBtn');
+        const editNameCounter = document.getElementById('editNameCounter');
+        const editDescCounter = document.getElementById('editDescCounter');
+        const editTagCounter = document.getElementById('editTagCounter');
+
+        let editTags = [];
+        let editAvatarDataURL = null;
+
+        function renderEditTags() {
+            editTagsContainer.innerHTML = editTags.map(t =>
+                '<span class="tag-item">' + t + '<span class="remove-tag" data-tag="' + t + '"><i class="fas fa-times"></i></span></span>'
+            ).join('');
+            document.querySelectorAll('#editTagsContainer .remove-tag').forEach(el => {
+                el.addEventListener('click', function() {
+                    const t = this.dataset.tag;
+                    editTags = editTags.filter(tt => tt !== t);
+                    renderEditTags();
+                    updateEditTagCounter();
+                });
+            });
+            updateEditTagCounter();
+        }
+
+        function updateEditTagCounter() {
+            editTagCounter.textContent = editTags.length + '/' + MAX_TAGS + ' тегов';
+            editTagCounter.className = 'char-counter' + (editTags.length >= MAX_TAGS ? ' over' : '');
+        }
+
+        editAddTagBtn.addEventListener('click', function() {
+            const val = editTagInput.value.trim();
+            if (!val) { alert('Введите тег'); return; }
+            if (val.length < 2) { alert('Тег должен быть минимум 2 символа'); return; }
+            if (val.length > 30) { alert('Тег не может быть длиннее 30 символов'); return; }
+            if (editTags.includes(val)) { alert('Такой тег уже добавлен'); return; }
+            if (editTags.length >= MAX_TAGS) { alert('Максимум ' + MAX_TAGS + ' тегов'); return; }
+            editTags.push(val);
+            renderEditTags();
+            editTagInput.value = '';
+        });
+        editTagInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault();
+                editAddTagBtn.click(); }
+        });
+
+        editAvatarFileInput.addEventListener('change', async function() {
+            const file = this.files[0];
+            if (!file) return;
+            editAvatarFileName.textContent = file.name;
+            try {
+                editAvatarDataURL = await resizeAndConvertToBase64(file);
+                editAvatarPreview.innerHTML = '<img src="' + editAvatarDataURL + '" alt="avatar" />';
+            } catch (e) { alert('Не удалось обработать файл'); }
+        });
+        editClearAvatarBtn.addEventListener('click', function() {
+            editAvatarFileInput.value = '';
+            editAvatarFileName.textContent = 'Файл не выбран';
+            editAvatarDataURL = null;
+            editAvatarPreview.innerHTML = '<span><i class="fas fa-image"></i></span>';
+        });
+
+        editServerName.addEventListener('input', function() {
+            const len = this.value.length;
+            editNameCounter.textContent = len + '/50';
+            editNameCounter.className = 'char-counter' + (len > 50 ? ' over' : '');
+        });
+        editServerDescription.addEventListener('input', function() {
+            const len = this.value.length;
+            editDescCounter.textContent = len + '/150';
+            editDescCounter.className = 'char-counter' + (len > 150 ? ' over' : '');
+        });
+
+        editServerVersion.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                editServerVersionCustom.style.display = 'block';
+                editServerVersionCustom.required = true;
+            } else {
+                editServerVersionCustom.style.display = 'none';
+                editServerVersionCustom.required = false;
+                editServerVersionCustom.value = '';
+            }
+        });
+
+        // Функция открытия редактирования
+        async function openEditServer(serverId) {
+            if (!currentUser) { alert('Войдите в аккаунт'); return; }
+            const role = await getUserRole(currentUser.uid);
+            const isOwner = servers.find(s => s.id === serverId)?.addedByUserId === currentUser.uid;
+            if (!isOwner && role !== 'moderator' && role !== 'admin') { alert('У вас нет прав редактировать этот сервер'); return; }
+
+            try {
+                const doc = await db.collection('servers').doc(serverId).get();
+                if (!doc.exists) { alert('Сервер не найден'); return; }
+                const data = doc.data();
+                editServerId.value = serverId;
+                editServerName.value = data.name || '';
+                editServerIP.value = data.address || '';
+                editServerPort.value = data.port || 25565;
+                editServerDiscord.value = data.discord || '';
+                editServerTelegram.value = data.telegram || '';
+                editServerDonate.value = data.donate || '';
+                editServerDescription.value = data.description || '';
+                // Версия
+                const ver = data.version || '';
+                const verOption = Array.from(editServerVersion.options).find(opt => opt.value === ver);
+                if (verOption) {
+                    editServerVersion.value = ver;
+                    editServerVersionCustom.style.display = 'none';
+                } else if (ver && ver !== 'auto') {
+                    editServerVersion.value = 'custom';
+                    editServerVersionCustom.style.display = 'block';
+                    editServerVersionCustom.value = ver;
+                } else {
+                    editServerVersion.value = 'auto';
+                    editServerVersionCustom.style.display = 'none';
+                    editServerVersionCustom.value = '';
+                }
+                // Теги
+                editTags = data.tags ? data.tags.slice() : [];
+                renderEditTags();
+                // Аватар
+                if (data.avatarUrl) {
+                    editAvatarPreview.innerHTML = '<img src="' + data.avatarUrl + '" alt="avatar" />';
+                    editAvatarDataURL = data.avatarUrl;
+                } else {
+                    editAvatarPreview.innerHTML = '<span><i class="fas fa-image"></i></span>';
+                    editAvatarDataURL = null;
+                }
+                editAvatarFileName.textContent = 'Файл не выбран';
+                editAvatarFileInput.value = '';
+                showPage('edit');
+            } catch (e) {
+                alert('Ошибка загрузки данных: ' + e.message);
+            }
+        }
+
+        // Сохранение редактирования
+        editServerBtn.addEventListener('click', async function() {
+            const id = editServerId.value;
+            if (!id) { alert('Ошибка: ID сервера не найден'); return; }
+            const name = editServerName.value.trim();
+            if (name.length < 3 || name.length > 50) { alert('Название должно быть от 3 до 50 символов'); return; }
+            const ip = editServerIP.value.trim();
+            if (!ip) { alert('Введите IP адрес'); return; }
+            const port = parseInt(editServerPort.value) || 25565;
+            const discord = editServerDiscord.value.trim();
+            if (discord && !discord.includes('discord.gg/') && !discord.includes('discord.com/invite/')) {
+                alert('Введите корректную ссылку на Discord');
+                return;
+            }
+            const telegram = editServerTelegram.value.trim();
+            if (telegram && !telegram.includes('t.me/')) {
+                alert('Введите корректную ссылку на Telegram');
+                return;
+            }
+            const donate = editServerDonate.value.trim();
+            const description = editServerDescription.value.trim();
+            if (description.length > 150) { alert('Описание не может быть длиннее 150 символов'); return; }
+            if (editTags.length > MAX_TAGS) { alert('Максимум ' + MAX_TAGS + ' тегов'); return; }
+
+            let version = '';
+            const sel = editServerVersion.value;
+            if (sel === 'auto') version = '';
+            else if (sel === 'custom') {
+                version = editServerVersionCustom.value.trim();
+                if (!version) { alert('Введите версию вручную.'); return; }
+            } else version = sel;
+
+            this.disabled = true;
+            this.textContent = '⏳ Сохранение...';
+            try {
+                const updateData = {
+                    name,
+                    address: ip,
+                    port,
+                    discord: discord || null,
+                    telegram: telegram || null,
+                    donate: donate || null,
+                    description,
+                    tags: editTags.slice(),
+                    version: version || null
+                };
+                if (editAvatarDataURL && editAvatarDataURL.startsWith('data:image')) {
+                    updateData.avatarUrl = editAvatarDataURL;
+                } else if (editAvatarDataURL === null) {
+                    updateData.avatarUrl = firebase.firestore.FieldValue.delete();
+                }
+                await db.collection('servers').doc(id).update(updateData);
+                alert('✅ Сервер обновлён!');
+                showPage('myservers');
+                loadMyServers();
+                applyFiltersAndRender();
+            } catch (e) {
+                alert('❌ Ошибка сохранения: ' + e.message);
+            } finally {
+                this.disabled = false;
+                this.textContent = '<i class="fas fa-save"></i> Сохранить';
+            }
+        });
+
+        document.getElementById('sortSelect').value = currentSort;
+
+        function loadVotedServers() {
+            const d = localStorage.getItem('votedServers');
+            if (d) {
+                try {
+                    const p = JSON.parse(d);
+                    if (Array.isArray(p)) {
+                        const o = {};
+                        p.forEach(id => { o[id] = 1; });
+                        votedServers = o;
+                        saveVotedServers();
+                    } else {
+                        votedServers = p;
+                    }
+                } catch (e) { votedServers = {}; }
+            } else { votedServers = {}; }
+        }
+
+        function saveVotedServers() {
+            localStorage.setItem('votedServers', JSON.stringify(votedServers));
+        }
+
+        function getVoteDirection(id) {
+            return votedServers[id] || 0;
+        }
+
+        function setVoteDirection(id, d) {
+            if (d === 0) delete votedServers[id];
+            else votedServers[id] = d;
+            saveVotedServers();
+        }
+
+        function showCopyNotification() {
+            const el = document.getElementById('copyNotification');
+            el.classList.add('show');
+            clearTimeout(el._timeout);
+            el._timeout = setTimeout(() => { el.classList.remove('show'); }, 2000);
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => showCopyNotification());
+        }
+
+        function timeAgo(ts) {
+            if (!ts) return 'неизвестно';
+            const s = Math.floor((Date.now() - ts.seconds * 1000) / 1000);
+            if (s < 0) return 'только что';
+            const m = Math.floor(s / 60);
+            const h = Math.floor(m / 60);
+            const d = Math.floor(h / 24);
+            const mo = Math.floor(d / 30);
+            const y = Math.floor(d / 365);
+            if (y > 0) return y + ' ' + getWord(y, 'год', 'года', 'лет') + ' назад';
+            if (mo > 0) return mo + ' ' + getWord(mo, 'месяц', 'месяца', 'месяцев') + ' назад';
+            if (d > 0) return d + ' ' + getWord(d, 'день', 'дня', 'дней') + ' назад';
+            if (h > 0) return h + ' ' + getWord(h, 'час', 'часа', 'часов') + ' назад';
+            if (m > 0) return m + ' ' + getWord(m, 'минуту', 'минуты', 'минут') + ' назад';
+            return 'только что';
+        }
+
+        function getWord(n, o, t, m) {
+            const n10 = n % 10;
+            const n100 = n % 100;
+            if (n100 >= 11 && n100 <= 19) return m;
+            if (n10 === 1) return o;
+            if (n10 >= 2 && n10 <= 4) return t;
+            return m;
+        }
+
+        // ВСЕ ВЕРСИИ
+        const allVersions = [
+            '26.3', '26.2', '26.1.2', '26.1.1', '26.1',
+            '1.21.11', '1.21.10', '1.21.9', '1.21.8', '1.21.7', '1.21.6', '1.21.5', '1.21.4', '1.21.3', '1.21.2', '1.21.1', '1.21',
+            '1.20.6', '1.20.4', '1.20.2', '1.20.1', '1.20',
+            '1.19.4', '1.19.3', '1.19.2', '1.19',
+            '1.18.2', '1.18.1', '1.18',
+            '1.17.1', '1.17',
+            '1.16.5', '1.16.4', '1.16.3', '1.16.2', '1.16.1', '1.16',
+            '1.15.2', '1.15.1', '1.15',
+            '1.14.4', '1.14.3', '1.14.2', '1.14.1', '1.14',
+            '1.13.2', '1.13.1', '1.13',
+            '1.12.2', '1.12.1', '1.12',
+            '1.11.2', '1.11.1', '1.11',
+            '1.10.2', '1.10.1', '1.10',
+            '1.9.4', '1.9.3', '1.9.2', '1.9.1', '1.9',
+            '1.8.9', '1.8.8', '1.8.7', '1.8.6', '1.8.5', '1.8.4', '1.8.3', '1.8.2', '1.8.1', '1.8',
+            '1.7.10', '1.7.9', '1.7.2', '1.6.4', '1.5.2'
+        ];
+
+        function generateVersionTags() {
+            const box = document.getElementById('versionBox');
+            let html = '<a class="v-tag all-versions ' + (activeVersionFilter === 'all' ? 'active-version' : '') + '" data-version="all">Все версии</a>';
+            allVersions.forEach(v => {
+                html += '<a class="v-tag ' + (activeVersionFilter === v ? 'active-version' : '') + '" data-version="' + v + '">' + v + '</a>';
+            });
+            box.innerHTML = html;
+            box.querySelectorAll('.v-tag').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    activeVersionFilter = this.dataset.version;
+                    currentPage = 1;
+                    generateVersionTags();
+                    applyFiltersAndRender();
+                });
+            });
+        }
+
+        function renderTags() {
+            tagsContainer.innerHTML = tags.map(t =>
+                '<span class="tag-item">' + t + '<span class="remove-tag" data-tag="' + t + '"><i class="fas fa-times"></i></span></span>'
+            ).join('');
+            document.querySelectorAll('#tagsContainer .remove-tag').forEach(el => {
+                el.addEventListener('click', function() {
+                    const t = this.dataset.tag;
+                    tags = tags.filter(tt => tt !== t);
+                    renderTags();
+                    updateTagCounter();
+                });
+            });
+            updateTagCounter();
+        }
+
+        function updateTagCounter() {
+            tagCounter.textContent = tags.length + '/' + MAX_TAGS + ' тегов';
+            tagCounter.className = 'char-counter' + (tags.length >= MAX_TAGS ? ' over' : '');
+        }
+
+        addTagBtn.addEventListener('click', function() {
+            const val = tagInput.value.trim();
+            if (!val) { alert('Введите тег'); return; }
+            if (val.length < 2) { alert('Тег должен быть минимум 2 символа'); return; }
+            if (val.length > 30) { alert('Тег не может быть длиннее 30 символов'); return; }
+            if (tags.includes(val)) { alert('Такой тег уже добавлен'); return; }
+            if (tags.length >= MAX_TAGS) { alert('Максимум ' + MAX_TAGS + ' тегов'); return; }
+            tags.push(val);
+            renderTags();
+            tagInput.value = '';
+        });
+        tagInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault();
+                addTagBtn.click(); }
+        });
+
+        function resizeAndConvertToBase64(file, mw = 200, mh = 200) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        let w = img.width,
+                            h = img.height;
+                        if (w > mw || h > mh) {
+                            const r = Math.min(mw / w, mh / h);
+                            w = Math.round(w * r);
+                            h = Math.round(h * r);
+                        }
+                        const c = document.createElement('canvas');
+                        c.width = w;
+                        c.height = h;
+                        const ctx = c.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(c.toDataURL('image/jpeg', 0.8));
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        avatarFileInput.addEventListener('change', async function() {
+            const file = this.files[0];
+            if (!file) return;
+            avatarFileName.textContent = file.name;
+            try {
+                avatarDataURL = await resizeAndConvertToBase64(file);
+                avatarPreview.innerHTML = '<img src="' + avatarDataURL + '" alt="avatar" />';
+            } catch (e) { alert('Не удалось обработать файл'); }
+        });
+        clearAvatarBtn.addEventListener('click', function() {
+            avatarFileInput.value = '';
+            avatarFileName.textContent = 'Файл не выбран';
+            avatarDataURL = null;
+            avatarPreview.innerHTML = '<span><i class="fas fa-image"></i></span>';
+        });
+
+        // УЛУЧШЕННАЯ ПРОВЕРКА СТАТУСА С 2 API
+        async function fetchServerStatus(address, port, retries = 3) {
+            const timeout = 5000;
+            const url1 = `https://api.mcsrvstat.us/3/${address}:${port}`;
+            const url2 = `https://mcapi.us/server/status?ip=${address}&port=${port}`;
+
+            for (let attempt = 1; attempt <= retries; attempt++) {
+                console.log(`[Попытка ${attempt}] Проверка ${address}:${port}...`);
+
+                try {
+                    const controller = new AbortController();
+                    const timer = setTimeout(() => controller.abort(), timeout);
+                    const response = await fetch(url1, { signal: controller.signal });
+                    clearTimeout(timer);
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.online === true) {
+                            const hasVersion = data.version && typeof data.version === 'string' && data.version.length > 0;
+                            const hasPlayers = data.players && typeof data.players.online === 'number' && typeof data.players.max === 'number';
+                            if (hasVersion && hasPlayers) {
+                                console.log(`✅ mcsrvstat: сервер ${address}:${port} онлайн и валиден`);
+                                return data;
+                            } else {
+                                console.log(`⚠️ mcsrvstat: сервер ${address}:${port} онлайн, но данные неполные`);
+                            }
+                        } else {
+                            console.log(`⚠️ mcsrvstat: сервер ${address}:${port} офлайн по данным API`);
+                        }
+                    } else {
+                        console.log(`⚠️ mcsrvstat: ответ не OK (${response.status})`);
+                    }
+                } catch (err) {
+                    if (err.name === 'AbortError') {
+                        console.log(`⏱ mcsrvstat: таймаут для ${address}:${port}`);
+                    } else {
+                        console.log(`❌ mcsrvstat: ошибка - ${err.message}`);
+                    }
+                }
+
+                try {
+                    const controller2 = new AbortController();
+                    const timer2 = setTimeout(() => controller2.abort(), timeout);
+                    const response2 = await fetch(url2, { signal: controller2.signal });
+                    clearTimeout(timer2);
+
+                    if (response2.ok) {
+                        const data2 = await response2.json();
+                        if (data2.online === true) {
+                            const hasVersion = data2.server && data2.server.name && typeof data2.server.name === 'string' && data2.server.name.length > 0;
+                            const hasPlayers = data2.players && typeof data2.players.now === 'number' && typeof data2.players.max === 'number';
+                            if (hasVersion && hasPlayers) {
+                                console.log(`✅ mcapi.us: сервер ${address}:${port} онлайн и валиден`);
+                                return {
+                                    online: true,
+                                    players: { online: data2.players.now, max: data2.players.max },
+                                    version: data2.server.name,
+                                    motd: data2.motd || '',
+                                    icon: data2.favicon || null
+                                };
+                            } else {
+                                console.log(`⚠️ mcapi.us: сервер ${address}:${port} онлайн, но данные неполные`);
+                            }
+                        } else {
+                            console.log(`⚠️ mcapi.us: сервер ${address}:${port} офлайн по данным API`);
+                        }
+                    } else {
+                        console.log(`⚠️ mcapi.us: ответ не OK (${response2.status})`);
+                    }
+                } catch (err) {
+                    if (err.name === 'AbortError') {
+                        console.log(`⏱ mcapi.us: таймаут для ${address}:${port}`);
+                    } else {
+                        console.log(`❌ mcapi.us: ошибка - ${err.message}`);
+                    }
+                }
+
+                if (attempt < retries) {
+                    console.log(`⏳ Повторная попытка через 1 секунду...`);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
+
+            console.log(`❌ Не удалось получить валидный статус для ${address}:${port} после ${retries} попыток`);
+            return null;
+        }
+
+        // ----- ОСТАЛЬНЫЕ ФУНКЦИИ -----
+        async function getClientIp() {
+            try {
+                const r = await fetch('https://api.ipify.org?format=json');
+                const d = await r.json();
+                return d.ip;
+            } catch (e) { return null; }
+        }
+
+        async function updateServerStatus(server) {
+            if (!server || !server.id) return;
+            const status = await fetchServerStatus(server.address, server.port);
+            if (!status) {
+                console.log(`⚠️ Сервер ${server.address}:${server.port} не ответил валидным статусом, пропускаем обновление`);
+                return;
+            }
+            const online = (status && status.online === true) ? (status.players ? status.players.online : 0) : 0;
+            let history = server.history && typeof server.history === 'object' ? server.history : {};
+            const now = new Date();
+            const cutoff = new Date(now.getTime() - 48 * 60 * 60 * 1000);
+            for (let key in history) {
+                const d = new Date(key);
+                if (d < cutoff) delete history[key];
+            }
+            const hourKey = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours()).toISOString();
+            history[hourKey] = online;
+            try {
+                await db.collection('servers').doc(server.id).update({
+                    statusData: status,
+                    statusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    history: history
+                });
+                const serverIndex = servers.findIndex(s => s.id === server.id);
+                if (serverIndex !== -1) {
+                    servers[serverIndex].statusData = status;
+                    servers[serverIndex].statusUpdatedAt = { seconds: Date.now() / 1000 };
+                    applyFiltersAndRender();
+                }
+            } catch (e) {}
+        }
+
+        async function autoDeleteOfflineServers() {
+            const now = Date.now();
+            const tm = 20 * 60 * 1000;
+            for (const s of servers) {
+                if (s.statusData && s.statusData.online === false && s.statusUpdatedAt) {
+                    const updatedAt = s.statusUpdatedAt.seconds * 1000;
+                    if (now - updatedAt > tm) {
+                        try { await db.collection('servers').doc(s.id).delete(); } catch (e) {}
+                    }
+                }
+            }
+        }
+
+        // ----- ДОБАВЛЕНИЕ СЕРВЕРА -----
+        async function addServerToFirestore() {
+            const captcha = document.getElementById('captchaInput');
+            const userAnswer = parseInt(captcha.value);
+            if (isNaN(userAnswer) || userAnswer !== correctAnswer) {
+                alert('❌ Неверный ответ на капчу. Попробуйте ещё раз.');
+                return;
+            }
+            const name = serverName.value.trim();
+            if (name.length < 3 || name.length > 50) {
+                alert('Название должно быть от 3 до 50 символов');
+                return;
+            }
+            const desc = serverDescription.value.trim();
+            if (desc.length > 150) { alert('Описание не может быть длиннее 150 символов'); return; }
+            const discord = serverDiscord.value.trim();
+            if (discord && !discord.includes('discord.gg/') && !discord.includes('discord.com/invite/')) {
+                alert('Введите корректную ссылку на Discord сервер (например, https://discord.gg/xxxx)');
+                return;
+            }
+            const telegram = serverTelegram.value.trim();
+            if (telegram && !telegram.includes('t.me/')) {
+                alert('Введите корректную ссылку на Telegram (например, https://t.me/channel)');
+                return;
+            }
+            const donate = serverDonate.value.trim();
+            if (tags.length > MAX_TAGS) { alert('Максимум ' + MAX_TAGS + ' тегов'); return; }
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const MAX_SERVERS_PER_DAY = currentUser ? 9 : 3;
+            let userIp = null;
+            let queryField = 'addedByUserId';
+            let queryValue = currentUser ? currentUser.uid : null;
+            if (!currentUser) {
+                userIp = await getClientIp();
+                if (!userIp) { alert('Не удалось определить ваш IP-адрес.'); return; }
+                queryField = 'addedByIp';
+                queryValue = userIp;
+            }
+            const userServersQuery = await db.collection('servers').where(queryField, '==', queryValue).get();
+            let todayCount = 0;
+            userServersQuery.forEach(doc => {
+                const data = doc.data();
+                if (data.createdAt && data.createdAt.toDate() > today) todayCount++;
+            });
+            if (todayCount >= MAX_SERVERS_PER_DAY) {
+                alert('❌ Вы уже добавили ' + MAX_SERVERS_PER_DAY + ' серверов сегодня. Лимит: ' + MAX_SERVERS_PER_DAY + ' сервера в сутки.');
+                return;
+            }
+            const ip = serverIP.value.trim();
+            const port = parseInt(serverPort.value) || 25565;
+            if (!name || !ip) { alert('Заполните название и IP адрес!'); return; }
+            if (!currentUser) {
+                const ipCheck = await getClientIp();
+                if (!ipCheck) { alert('Не удалось определить ваш IP-адрес.'); return; }
+                userIp = ipCheck;
+            }
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Проверка...';
+
+            const status = await fetchServerStatus(ip, port, 3);
+
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-check"></i> Добавить';
+            if (!status || status.online !== true) {
+                alert('❌ Сервер не найден или выключен. Проверьте правильность IP и порта.');
+                return;
+            }
+            if (!status.version || !status.players || typeof status.players.online !== 'number' || typeof status.players.max !== 'number') {
+                alert('❌ Сервер вернул неполные данные (версия или игроки отсутствуют). Возможно, это не сервер Minecraft.');
+                return;
+            }
+            let version = '';
+            const sel = serverVersionSelect.value;
+            if (sel == 'auto') version = status.version || '';
+            else if (sel == 'custom') {
+                version = serverVersionCustom.value.trim();
+                if (!version) { alert('Введите версию вручную.'); return; }
+            } else version = sel;
+            let description = desc;
+            if (!description && status.motd) {
+                if (Array.isArray(status.motd)) description = status.motd.join('\n');
+                else if (typeof status.motd == 'string') description = status.motd;
+                else if (typeof status.motd == 'object' && status.motd.clean) description = status.motd.clean;
+            }
+            if (servers.some(s => s.address.toLowerCase() === ip.toLowerCase() && s.port === port)) {
+                alert('Сервер с таким IP и портом уже существует!');
+                return;
+            }
+            const avatar = avatarDataURL || null;
+            const now = new Date();
+            const hourKey = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours()).toISOString();
+            const history = {};
+            history[hourKey] = status.players ? status.players.online : 0;
+            const newServer = {
+                name,
+                address: ip,
+                port,
+                version,
+                description,
+                tags: tags.slice(),
+                avatarUrl: avatar,
+                votes: 0,
+                statusData: status,
+                statusUpdatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                history: history,
+                lastBoost: null,
+                discord: discord || null,
+                telegram: telegram || null,
+                donate: donate || null,
+                isOfficial: false,
+                inAbyss: false
+            };
+            if (currentUser) {
+                newServer.addedByUserId = currentUser.uid;
+                newServer.addedByUserEmail = currentUser.email;
+                newServer.addedByIp = userIp || null;
+            } else {
+                newServer.addedByIp = userIp;
+                newServer.addedByUserId = null;
+                newServer.addedByUserEmail = null;
+            }
+            try {
+                await db.collection('servers').add(newServer);
+                serverName.value = '';
+                serverIP.value = '';
+                serverPort.value = '25565';
+                serverDiscord.value = '';
+                serverTelegram.value = '';
+                serverDonate.value = '';
+                serverVersionSelect.value = 'auto';
+                serverVersionCustom.style.display = 'none';
+                serverVersionCustom.value = '';
+                serverDescription.value = '';
+                tags = [];
+                renderTags();
+                avatarFileInput.value = '';
+                avatarFileName.textContent = 'Файл не выбран';
+                avatarDataURL = null;
+                avatarPreview.innerHTML = '<span><i class="fas fa-image"></i></span>';
+                const remaining = MAX_SERVERS_PER_DAY - todayCount - 1;
+                alert('✅ Сервер успешно добавлен! Осталось ' + remaining + ' добавлений на сегодня.');
+                showPage('main');
+            } catch (e) {
+                alert('Не удалось добавить сервер: ' + e.message);
+            }
+        }
+
+        submitBtn.addEventListener('click', addServerToFirestore);
+
+        serverName.addEventListener('input', function() {
+            const len = this.value.length;
+            nameCounter.textContent = len + '/50';
+            nameCounter.className = 'char-counter' + (len > 50 ? ' over' : '');
+        });
+        serverDescription.addEventListener('input', function() {
+            const len = this.value.length;
+            descCounter.textContent = len + '/150';
+            descCounter.className = 'char-counter' + (len > 150 ? ' over' : '');
+        });
+
+        function loadServers() {
+            if (unsubscribe) unsubscribe();
+            unsubscribe = db.collection('servers').onSnapshot(async (snapshot) => {
+                const temp = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    temp.push({
+                        id: doc.id,
+                        ...data,
+                        port: data.port || 25565,
+                        statusData: data.statusData || null,
+                        statusUpdatedAt: data.statusUpdatedAt || null,
+                        createdAt: data.createdAt || null,
+                        history: data.history || {},
+                        lastBoost: data.lastBoost || null,
+                        discord: data.discord || null,
+                        telegram: data.telegram || null,
+                        donate: data.donate || null,
+                        isOfficial: data.isOfficial || false,
+                        inAbyss: data.inAbyss || false
+                    });
+                });
+
+                servers = temp;
+                servers.forEach(s => {
+                    if (!s.statusData) updateServerStatus(s);
+                });
+                await autoDeleteOfflineServers();
+                applyFiltersAndRender();
+            }, (error) => {
+                serversContainer.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--text-muted);"><i class="fas fa-exclamation-triangle" style="font-size:32px;display:block;margin-bottom:12px;"></i>Ошибка: ' + error.message + '</div>';
+            });
+        }
+
+        function applyFiltersAndRender() {
+            const search = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+            let filtered = servers.filter(s => {
+                const nameMatch = s.name && s.name.toLowerCase().includes(search);
+                const versionMatch = activeVersionFilter === 'all' || (s.version && s.version.includes(activeVersionFilter));
+                const notInAbyss = !s.inAbyss;
+                return nameMatch && versionMatch && notInAbyss;
+            });
+
+            filtered.sort((a, b) => {
+                if (a.isOfficial !== b.isOfficial) return a.isOfficial ? -1 : 1;
+                const aOnline = a.statusData && a.statusData.online === true;
+                const bOnline = b.statusData && b.statusData.online === true;
+                if (aOnline !== bOnline) return aOnline ? -1 : 1;
+                switch (currentSort) {
+                    case 'new':
+                        return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+                    case 'players':
+                        const aPlayers = a.statusData?.players?.online || 0;
+                        const bPlayers = b.statusData?.players?.online || 0;
+                        return bPlayers - aPlayers;
+                    case 'votes':
+                        return (b.votes || 0) - (a.votes || 0);
+                    default:
+                        return 0;
+                }
+            });
+
+            const total = filtered.length;
+            const totalPages = Math.ceil(total / PER_PAGE) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            const start = (currentPage - 1) * PER_PAGE;
+            const end = start + PER_PAGE;
+            const pageItems = filtered.slice(start, end);
+            renderCards(pageItems);
+            renderPagination(totalPages);
+        }
+
+        // ОБНОВЛЁННАЯ отрисовка карточек: добавлена кнопка "Удалить" без варна
+        function renderCards(items) {
+            if (!items || items.length === 0) {
+                serversContainer.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--text-muted);"><i class="fas fa-server" style="font-size:32px;display:block;margin-bottom:12px;"></i>Нет серверов</div>';
+                return;
+            }
+            let html = '';
+            items.forEach(server => {
+                const status = server.statusData;
+                const online = status && status.online === true;
+                const playersOnline = status && status.players ? status.players.online : 0;
+                const playersMax = status && status.players ? status.players.max : 0;
+                const versionDisplay = status && status.version ? status.version : (server.version || '—');
+                const description = server.description || '';
+                const tags = server.tags || [];
+                const votes = server.votes || 0;
+
+                let iconHtml = '<i class="fas fa-server"></i>';
+                if (server.avatarUrl) {
+                    iconHtml = '<img src="' + server.avatarUrl + '" alt="avatar" />';
+                } else if (status && status.icon) {
+                    let src = status.icon;
+                    if (!src.startsWith('data:image')) src = 'data:image/png;base64,' + src;
+                    iconHtml = '<img src="' + src + '" alt="icon" />';
+                }
+
+                const timeText = online ? timeAgo(server.createdAt) : timeAgo(server.statusUpdatedAt);
+                const timeLabel = online ? 'Открылся' : 'Закрылся';
+                const statusText = online ? 'Онлайн' : 'Офлайн';
+                const dotClass = online ? '' : 'offline';
+                const currentDir = getVoteDirection(server.id);
+                const upActive = currentDir === 1 ? 'vote-arrow-active' : 'vote-arrow';
+                const downActive = currentDir === -1 ? 'vote-arrow-active' : 'vote-arrow';
+                const onlineIconSvg = '<svg class="online-icon-svg ' + (online ? '' : 'offline') + '" viewBox="0 0 24 24"><circle class="head" cx="12" cy="8" r="4" /><path class="body" d="M20 21c0-4-4-6-8-6s-8 2-8 6" /><path class="body" d="M4 21c0-4 4-6 8-6s8 2 8 6" stroke-width="1.8" /></svg>';
+                const progressClass = online ? '' : 'offline';
+                const officialBadge = server.isOfficial ? '<i class="fas fa-check-circle" style="color:#1da1f2;font-size:13px;margin-left:4px;" title="Официальный сервер"></i>' : '';
+
+                html += `<div class="server-row" data-id="${server.id}">
+                    <div class="server-left-side">
+                        <div class="server-top-row">
+                            <div class="server-icon">${iconHtml}</div>
+                            <div class="server-main-info">
+                                <div class="server-title-line">
+                                    <div class="flag-ru"></div>
+                                    <a class="server-title" onclick="openStats('${server.id}')">${server.name || server.address}${officialBadge}</a>
+                                    <span class="server-status-dot ${dotClass}"></span>
+                                    <span style="font-size:12px;color:var(--text-muted);">${statusText}</span>
+                                </div>
+                                <div class="server-meta-line">
+                                    <span>IP: <strong class="meta-ip" onclick="copyToClipboard('${server.address}:${server.port}')">${server.address}:${server.port}</strong></span>
+                                    <span>версия: <span class="meta-highlight">${versionDisplay}</span></span>
+                                    <span class="meta-time">${timeLabel} ${timeText}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${description ? `<div class="server-description">${description}</div>` : ''}
+                        ${tags.length ? `<div class="server-tags-line">${tags.map(t => `<span>${t}</span>`).join('')}</div>` : ''}
+                        <div class="server-actions">
+                            <div class="vote-block">
+                                <span class="${upActive}" onclick="voteServer('${server.id}',1)">▲</span>
+                                <span class="vote-count">${votes}</span>
+                                <span class="${downActive}" onclick="voteServer('${server.id}',-1)">▼</span>
+                            </div>
+                        </div>
+                        <!-- МОДЕРАТОРСКИЕ КНОПКИ -->
+                        <div class="mod-controls" id="mod-${server.id}" style="display:none;">
+                            <button class="mod-btn mod-btn-delete" onclick="deleteServerAsModerator('${server.id}', true)">🗑️ Удалить + Варн</button>
+                            <button class="mod-btn mod-btn-delete-novarn" onclick="deleteServerAsModerator('${server.id}', false)">🗑️ Удалить</button>
+                            <button class="mod-btn mod-btn-abyss" onclick="toggleServerAbyss('${server.id}')">🕳️ ${server.inAbyss ? 'Из бездны' : 'В бездну'}</button>
+                            <button class="mod-btn mod-btn-official" onclick="toggleServerOfficial('${server.id}')">✓ ${server.isOfficial ? 'Убрать галочку' : 'Сделать офиц.'}</button>
+                        </div>
+                    </div>
+                    <div class="online-wrapper">
+                        ${onlineIconSvg}
+                        <div class="online-progress-bar ${progressClass}">${online ? playersOnline + ' из ' + playersMax : 'Офлайн'}</div>
+                    </div>
+                </div>`;
+            });
+            serversContainer.innerHTML = html;
+
+            if (currentUser) {
+                getUserRole(currentUser.uid).then(role => {
+                    if (role === 'moderator' || role === 'admin') {
+                        document.querySelectorAll('.mod-controls').forEach(el => {
+                            el.style.display = 'flex';
+                        });
+                    }
+                });
+            }
+        }
+
+        function loadServerStats(id) {
+            if (statsUnsubscribe) { statsUnsubscribe();
+                statsUnsubscribe = null; }
+            statsUnsubscribe = db.collection('servers').doc(id).onSnapshot((doc) => {
+                if (!doc.exists) return;
+                const data = doc.data();
+                document.getElementById('statsServerName').textContent = data.name || data.address || 'Без названия';
+                document.getElementById('statsServerAddr').textContent = 'IP: ' + data.address + ':' + (data.port || 25565);
+                document.getElementById('statsVersion').textContent = data.version || '—';
+                document.getElementById('statsVotes').textContent = data.votes || 0;
+                const status = data.statusData || null;
+                const online = status && status.online === true;
+                document.getElementById('statsOnline').textContent = online ? (status.players ? status.players.online : 0) : 0;
+                document.getElementById('statsMax').textContent = online ? (status.players ? status.players.max : 0) : 0;
+                document.getElementById('statsDescription').textContent = data.description || '—';
+                document.getElementById('statsTags').textContent = (data.tags || []).join(', ') || '—';
+                document.getElementById('statsDiscord').textContent = data.discord || '—';
+                if (data.discord) {
+                    document.getElementById('statsDiscord').innerHTML = '<a href="' + data.discord + '" target="_blank" style="color:var(--text-link);">' + data.discord + '</a>';
+                }
+                document.getElementById('statsTelegram').textContent = data.telegram || '—';
+                if (data.telegram) {
+                    document.getElementById('statsTelegram').innerHTML = '<a href="' + data.telegram + '" target="_blank" style="color:var(--text-link);">' + data.telegram + '</a>';
+                }
+                document.getElementById('statsDonate').textContent = data.donate || '—';
+                if (data.donate) {
+                    document.getElementById('statsDonate').innerHTML = '<a href="' + data.donate + '" target="_blank" style="color:var(--text-link);">' + data.donate + '</a>';
+                }
+                drawChart(data.history || {});
+            });
+        }
+
+        function drawChart(history) {
+            const canvas = document.getElementById('statsChart');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth || 800;
+            canvas.height = 200;
+            const w = canvas.width,
+                h = canvas.height;
+            const p = { top: 20, right: 20, bottom: 30, left: 30 };
+            const cw = w - p.left - p.right,
+                ch = h - p.top - p.bottom;
+            ctx.clearRect(0, 0, w, h);
+            const now = new Date(),
+                hours = [],
+                values = [];
+            for (let i = 23; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - i);
+                const key = d.toISOString();
+                hours.push(d);
+                values.push(history[key] !== undefined ? history[key] : null);
+            }
+            if (values.every(v => v === null)) {
+                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted').trim() || '#888';
+                ctx.font = '14px Tahoma';
+                ctx.textAlign = 'center';
+                ctx.fillText('Нет данных за последние 24 часа', w / 2, h / 2);
+                return;
+            }
+            const data = values.map(v => v !== null ? v : 0);
+            const max = Math.max(...data, 1);
+            const scaleY = (val) => p.top + ch - (val / max) * ch;
+            ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--chart-grid').trim() || '#ddd';
+            ctx.lineWidth = .5;
+            for (let i = 0; i <= 4; i++) {
+                const y = p.top + (i / 4) * ch;
+                ctx.beginPath();
+                ctx.moveTo(p.left, y);
+                ctx.lineTo(w - p.right, y);
+                ctx.stroke();
+                const val = Math.round(max - (i / 4) * max);
+                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted').trim() || '#888';
+                ctx.font = '10px Tahoma';
+                ctx.textAlign = 'right';
+                ctx.fillText(val, p.left - 5, y + 3);
+            }
+            ctx.beginPath();
+            ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--chart-line').trim() || '#28a745';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < data.length; i++) {
+                const x = p.left + (i / (data.length - 1)) * cw;
+                const y = scaleY(data[i]);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            const lastX = p.left + cw;
+            ctx.lineTo(lastX, p.top + ch);
+            ctx.lineTo(p.left, p.top + ch);
+            ctx.closePath();
+            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--chart-fill').trim() || 'rgba(40,167,69,0.2)';
+            ctx.fill();
+            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted').trim() || '#888';
+            ctx.font = '10px Tahoma';
+            ctx.textAlign = 'center';
+            for (let i = 0; i < hours.length; i += 4) {
+                const x = p.left + (i / (hours.length - 1)) * cw;
+                const hh = hours[i].getHours();
+                ctx.fillText(hh + ':00', x, canvas.height - 10);
+            }
+        }
+
+        async function voteServer(id, delta) {
+            if (!currentUser) { alert('⚠️ Для голосования необходимо войти в аккаунт!');
+                showPage('login'); return; }
+            if (!await isUserVerified(currentUser.uid)) {
+                const role = await getUserRole(currentUser.uid);
+                if (role !== 'admin') {
+                    alert('⚠️ Ваш email не подтверждён. Проверьте почту и подтвердите аккаунт.');
+                    showVerifyPage(currentUser.email, currentUser.uid);
+                    return;
+                }
+                // admin пропускает
+            }
+            if (votingCooldown) return;
+            votingCooldown = true;
+            setTimeout(() => { votingCooldown = false; }, 500);
+            const server = servers.find(s => s.id === id);
+            if (!server) return;
+            const currentDir = getVoteDirection(id);
+            let newDir = 0;
+            if (currentDir === delta) newDir = 0;
+            else if (currentDir === -delta) newDir = delta;
+            else newDir = delta;
+            const change = newDir - currentDir;
+            if (change === 0) return;
+            const newVotes = (server.votes || 0) + change;
+            try {
+                await db.collection('servers').doc(id).update({ votes: newVotes });
+                server.votes = newVotes;
+                setVoteDirection(id, newDir);
+                applyFiltersAndRender();
+            } catch (e) { alert('Не удалось проголосовать.'); }
+        }
+
+        // ----- МОИ СЕРВЕРА -----
+        let myServersUnsubscribe = null;
+
+        function loadMyServers() {
+            if (!currentUser) {
+                document.getElementById('myServersContainer').innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--text-muted);"><i class="fas fa-lock" style="font-size:32px;display:block;margin-bottom:12px;"></i>Войдите в аккаунт, чтобы увидеть свои сервера</div>';
+                return;
+            }
+
+            if (myServersUnsubscribe) myServersUnsubscribe();
+
+            myServersUnsubscribe = db.collection('servers')
+                .where('addedByUserId', '==', currentUser.uid)
+                .onSnapshot(async (snapshot) => {
+                    const myServers = [];
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        myServers.push({
+                            id: doc.id,
+                            ...data,
+                            port: data.port || 25565,
+                            statusData: data.statusData || null,
+                            statusUpdatedAt: data.statusUpdatedAt || null,
+                            createdAt: data.createdAt || null,
+                            history: data.history || {},
+                            lastBoost: data.lastBoost || null,
+                            discord: data.discord || null,
+                            isOfficial: data.isOfficial || false,
+                            inAbyss: data.inAbyss || false
+                        });
+                    });
+
+                    myServers.sort((a, b) => {
+                        const aOnline = a.statusData && a.statusData.online === true;
+                        const bOnline = b.statusData && b.statusData.online === true;
+                        if (aOnline === bOnline) {
+                            if (a.createdAt && b.createdAt) {
+                                return b.createdAt.seconds - a.createdAt.seconds;
+                            }
+                            return 0;
+                        }
+                        return aOnline ? -1 : 1;
+                    });
+
+                    const role = await getUserRole(currentUser.uid);
+                    const isModerator = (role === 'moderator' || role === 'admin');
+                    renderMyServers(myServers, isModerator);
+                }, (error) => {
+                    document.getElementById('myServersContainer').innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--text-muted);">Ошибка: ' + error.message + '</div>';
+                });
+        }
+
+        // ОБНОВЛЁННАЯ отрисовка моих серверов: добавлена кнопка "Удалить" без варна
+        function renderMyServers(items, isModerator) {
+            const container = document.getElementById('myServersContainer');
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><h3>У вас пока нет добавленных серверов</h3><p style="color:var(--text-muted);">Добавьте свой первый сервер, нажав на кнопку "Добавить сервер" в меню</p></div>';
+                return;
+            }
+
+            let html = '';
+            items.forEach(server => {
+                const status = server.statusData;
+                const online = status && status.online === true;
+                const playersOnline = status && status.players ? status.players.online : 0;
+                const playersMax = status && status.players ? status.players.max : 0;
+                const versionDisplay = status && status.version ? status.version : (server.version || '—');
+                const description = server.description || '';
+                const tags = server.tags || [];
+                const votes = server.votes || 0;
+
+                let iconHtml = '<i class="fas fa-server"></i>';
+                if (server.avatarUrl) {
+                    iconHtml = '<img src="' + server.avatarUrl + '" alt="avatar" />';
+                } else if (status && status.icon) {
+                    let src = status.icon;
+                    if (!src.startsWith('data:image')) src = 'data:image/png;base64,' + src;
+                    iconHtml = '<img src="' + src + '" alt="icon" />';
+                }
+
+                const timeText = online ? timeAgo(server.createdAt) : timeAgo(server.statusUpdatedAt);
+                const timeLabel = online ? 'Открылся' : 'Закрылся';
+                const statusText = online ? 'Онлайн' : 'Офлайн';
+                const dotClass = online ? '' : 'offline';
+                const currentDir = getVoteDirection(server.id);
+                const upActive = currentDir === 1 ? 'vote-arrow-active' : 'vote-arrow';
+                const downActive = currentDir === -1 ? 'vote-arrow-active' : 'vote-arrow';
+                const onlineIconSvg = '<svg class="online-icon-svg ' + (online ? '' : 'offline') + '" viewBox="0 0 24 24"><circle class="head" cx="12" cy="8" r="4" /><path class="body" d="M20 21c0-4-4-6-8-6s-8 2-8 6" /><path class="body" d="M4 21c0-4 4-6 8-6s8 2 8 6" stroke-width="1.8" /></svg>';
+                const progressClass = online ? '' : 'offline';
+                const officialBadge = server.isOfficial ? '<i class="fas fa-check-circle" style="color:#1da1f2;font-size:13px;margin-left:4px;" title="Официальный сервер"></i>' : '';
+
+                const isOwner = currentUser && server.addedByUserId === currentUser.uid;
+                const canEdit = isOwner || isModerator;
+                const canBoost = isOwner && online;
+
+                html += `<div class="server-row" data-id="${server.id}">
+                    <div class="server-left-side">
+                        <div class="server-top-row">
+                            <div class="server-icon">${iconHtml}</div>
+                            <div class="server-main-info">
+                                <div class="server-title-line">
+                                    <div class="flag-ru"></div>
+                                    <a class="server-title" onclick="openStats('${server.id}')">${server.name || server.address}${officialBadge}</a>
+                                    <span class="server-status-dot ${dotClass}"></span>
+                                    <span style="font-size:12px;color:var(--text-muted);">${statusText}</span>
+                                </div>
+                                <div class="server-meta-line">
+                                    <span>IP: <strong class="meta-ip" onclick="copyToClipboard('${server.address}:${server.port}')">${server.address}:${server.port}</strong></span>
+                                    <span>версия: <span class="meta-highlight">${versionDisplay}</span></span>
+                                    <span class="meta-time">${timeLabel} ${timeText}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${description ? `<div class="server-description">${description}</div>` : ''}
+                        ${tags.length ? `<div class="server-tags-line">${tags.map(t => `<span>${t}</span>`).join('')}</div>` : ''}
+                        <div class="server-actions">
+                            <div class="vote-block">
+                                <span class="${upActive}" onclick="voteServer('${server.id}',1)">▲</span>
+                                <span class="vote-count">${votes}</span>
+                                <span class="${downActive}" onclick="voteServer('${server.id}',-1)">▼</span>
+                            </div>
+                            ${canEdit ? `<button class="edit-btn" onclick="openEditServer('${server.id}')"><i class="fas fa-pen"></i> Редактировать</button>` : ''}
+                            ${canBoost ? `<button class="boost-btn" onclick="boostServer('${server.id}')"><i class="fas fa-arrow-up"></i> Поднять наверх</button>` : ''}
+                            ${isModerator ? `<div class="mod-controls" style="display:flex;margin-top:4px;">
+                                <button class="mod-btn mod-btn-delete" onclick="deleteServerAsModerator('${server.id}', true)">🗑️ Удалить + Варн</button>
+                                <button class="mod-btn mod-btn-delete-novarn" onclick="deleteServerAsModerator('${server.id}', false)">🗑️ Удалить</button>
+                                <button class="mod-btn mod-btn-abyss" onclick="toggleServerAbyss('${server.id}')">🕳️ ${server.inAbyss ? 'Из бездны' : 'В бездну'}</button>
+                                <button class="mod-btn mod-btn-official" onclick="toggleServerOfficial('${server.id}')">✓ ${server.isOfficial ? 'Убрать галочку' : 'Сделать офиц.'}</button>
+                            </div>` : ''}
+                        </div>
+                    </div>
+                    <div class="online-wrapper">
+                        ${onlineIconSvg}
+                        <div class="online-progress-bar ${progressClass}">${online ? playersOnline + ' из ' + playersMax : 'Офлайн'}</div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // Функция поднятия (boost)
+        async function boostServer(serverId) {
+            if (!currentUser) { alert('⚠️ Войдите в аккаунт!'); return; }
+            if (!await isUserVerified(currentUser.uid)) {
+                const role = await getUserRole(currentUser.uid);
+                if (role !== 'admin') {
+                    alert('⚠️ Подтвердите email перед использованием этой функции.');
+                    showVerifyPage(currentUser.email, currentUser.uid);
+                    return;
+                }
+            }
+            const server = servers.find(s => s.id === serverId);
+            if (!server) { alert('Сервер не найден'); return; }
+            if (server.addedByUserId !== currentUser.uid) { alert('❌ Это не ваш сервер!'); return; }
+            if (!server.statusData || server.statusData.online !== true) { alert('❌ Сервер должен быть онлайн для поднятия!'); return; }
+            const now = Date.now();
+            const lastBoost = server.lastBoost ? server.lastBoost.seconds * 1000 : 0;
+            const hoursSinceBoost = (now - lastBoost) / (1000 * 60 * 60);
+            if (hoursSinceBoost < 24) {
+                const remaining = Math.ceil(24 - hoursSinceBoost);
+                alert(`⏳ Поднятие доступно через ${remaining} часов. Раз в сутки!`);
+                return;
+            }
+            try {
+                const newDate = new Date();
+                await db.collection('servers').doc(serverId).update({
+                    createdAt: firebase.firestore.Timestamp.fromDate(newDate),
+                    lastBoost: firebase.firestore.Timestamp.fromDate(newDate)
+                });
+                const serverIndex = servers.findIndex(s => s.id === serverId);
+                if (serverIndex !== -1) {
+                    servers[serverIndex].createdAt = { seconds: Math.floor(newDate.getTime() / 1000) };
+                    servers[serverIndex].lastBoost = { seconds: Math.floor(newDate.getTime() / 1000) };
+                }
+                alert('✅ Сервер успешно поднят наверх!');
+                applyFiltersAndRender();
+                loadMyServers();
+            } catch (e) { alert('❌ Ошибка: ' + e.message); }
+        }
+
+        function renderPagination(totalPages) {
+            if (totalPages <= 1) { paginationEl.innerHTML = ''; return; }
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<a class="page-link ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</a>`;
+            }
+            paginationEl.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            applyFiltersAndRender();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ----- ИНИЦИАЛИЗАЦИЯ -----
+        function init() {
+            loadVotedServers();
+            loadServers();
+            generateVersionTags();
+            renderTags();
+
+            document.getElementById('searchInput').addEventListener('input', function() {
+                currentPage = 1;
+                applyFiltersAndRender();
+            });
+
+            document.getElementById('sortSelect').addEventListener('change', function() {
+                currentSort = this.value;
+                localStorage.setItem('serverSort', currentSort);
+                currentPage = 1;
+                applyFiltersAndRender();
+            });
+
+            serverVersionSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    serverVersionCustom.style.display = 'block';
+                    serverVersionCustom.required = true;
+                } else {
+                    serverVersionCustom.style.display = 'none';
+                    serverVersionCustom.required = false;
+                    serverVersionCustom.value = '';
+                }
+            });
+
+            document.querySelector('h1').addEventListener('dblclick', function() {
+                if (confirm('Обновить статусы всех серверов?')) servers.forEach(s => updateServerStatus(s));
+            });
+
+            setInterval(async () => {
+                await autoDeleteOfflineServers();
+                for (const s of servers) await updateServerStatus(s);
+            }, 5 * 60 * 1000);
+
+            window.addEventListener('resize', () => {
+                if (document.getElementById('page-stats').classList.contains('active') && currentStatsServerId)
+                    loadServerStats(currentStatsServerId);
+            });
+
+            document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') document.getElementById('loginBtn').click();
+            });
+            document.getElementById('loginEmail').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') document.getElementById('loginBtn').click();
+            });
+            document.getElementById('registerPasswordConfirm').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') document.getElementById('registerBtn').click();
+            });
+            document.getElementById('verifyCode').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') document.getElementById('verifyBtn').click();
+            });
+        }
+
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+        else init();
+    </script>
+</body>
+</html>
