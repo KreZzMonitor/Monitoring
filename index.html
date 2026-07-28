@@ -741,7 +741,7 @@
     </div>
     <footer>
         <div class="footer-container">
-            <div>&copy; KreZzMonitor. Все права защищены. Версия 1.1.4.0</div>
+            <div>&copy; KreZzMonitor. Все права защищены. Версия 1.1.4.1</div>
             <div class="footer-links">
                 <a onclick="showPage('contacts')">Контакты</a>
                 <a href="https://discord.gg/hTdb4ZyBzS" target="_blank"><i class="fab fa-discord"></i> Discord</a>
@@ -1046,6 +1046,7 @@
             ok ? succ.textContent = '✅ Новый код отправлен на почту!' : err.textContent = '❌ Не удалось отправить письмо. Попробуйте позже.';
         });
 
+        // ОБНОВЛЁННАЯ РЕГИСТРАЦИЯ с поддержкой analitik@krezzmonitor.github.io
         document.getElementById('registerBtn').addEventListener('click', async function() {
             const email = document.getElementById('registerEmail').value.trim();
             const pass = document.getElementById('registerPassword').value;
@@ -1066,16 +1067,37 @@
                 const user = await auth.createUserWithEmailAndPassword(email, pass);
                 await user.user.updateProfile({ displayName: randomNick });
                 let role = 'user';
-                if (email === 'gurinnikita02@gmail.com') role = 'moderator';
-                if (email === 'analitik@krezzmonitor.github.io') role = 'admin';
+                let verified = false;
+                // Специальные аккаунты
+                if (email === 'gurinnikita02@gmail.com') {
+                    role = 'moderator';
+                    verified = false; // требует подтверждения
+                } else if (email === 'analitik@krezzmonitor.github.io') {
+                    role = 'admin';
+                    verified = true; // сразу подтверждён, обход верификации
+                }
                 await db.collection('users').doc(user.user.uid).set({
                     displayName: randomNick,
                     email: email,
-                    verified: false,
+                    verified: verified,
                     role: role,
                     warns: 0,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
+
+                if (role === 'admin') {
+                    // Администратор сразу авторизован, выходим и заходим заново для обновления UI
+                    succ.textContent = '✅ Аккаунт администратора создан! Вы автоматически вошли.';
+                    await auth.signOut();
+                    await auth.signInWithEmailAndPassword(email, pass);
+                    updateUIForUser(auth.currentUser);
+                    setTimeout(() => showPage('main'), 500);
+                    this.disabled = false;
+                    this.textContent = 'Зарегистрироваться';
+                    return;
+                }
+
+                // Для обычных пользователей и модераторов — требуем подтверждения
                 succ.textContent = '✅ Аккаунт создан! Ваш ник: ' + randomNick + '. Подтвердите почту.';
                 await auth.signOut();
                 showVerifyPage(email, user.user.uid);
@@ -1101,6 +1123,7 @@
             }
         });
 
+        // ОБНОВЛЁННЫЙ ВХОД с пропуском верификации для admin
         document.getElementById('loginBtn').addEventListener('click', async function() {
             const email = document.getElementById('loginEmail').value.trim();
             const pass = document.getElementById('loginPassword').value;
@@ -1118,7 +1141,10 @@
                     this.textContent = 'Войти';
                     return;
                 }
-                if (!await isUserVerified(user.user.uid)) {
+                const role = await getUserRole(user.user.uid);
+                const verified = await isUserVerified(user.user.uid);
+                // Если роль admin, верификация не обязательна
+                if (!verified && role !== 'admin') {
                     await auth.signOut();
                     err.textContent = '❌ Почта не подтверждена. Проверьте почту или запросите код повторно.';
                     showVerifyPage(email, user.user.uid);
@@ -2261,9 +2287,13 @@
             if (!currentUser) { alert('⚠️ Для голосования необходимо войти в аккаунт!');
                 showPage('login'); return; }
             if (!await isUserVerified(currentUser.uid)) {
-                alert('⚠️ Ваш email не подтверждён. Проверьте почту и подтвердите аккаунт.');
-                showVerifyPage(currentUser.email, currentUser.uid);
-                return;
+                const role = await getUserRole(currentUser.uid);
+                if (role !== 'admin') {
+                    alert('⚠️ Ваш email не подтверждён. Проверьте почту и подтвердите аккаунт.');
+                    showVerifyPage(currentUser.email, currentUser.uid);
+                    return;
+                }
+                // admin пропускает
             }
             if (votingCooldown) return;
             votingCooldown = true;
@@ -2429,9 +2459,13 @@
         async function boostServer(serverId) {
             if (!currentUser) { alert('⚠️ Войдите в аккаунт!'); return; }
             if (!await isUserVerified(currentUser.uid)) {
-                alert('⚠️ Подтвердите email перед использованием этой функции.');
-                showVerifyPage(currentUser.email, currentUser.uid);
-                return;
+                const role = await getUserRole(currentUser.uid);
+                if (role !== 'admin') {
+                    alert('⚠️ Подтвердите email перед использованием этой функции.');
+                    showVerifyPage(currentUser.email, currentUser.uid);
+                    return;
+                }
+                // admin пропускает
             }
             const server = servers.find(s => s.id === serverId);
             if (!server) { alert('Сервер не найден'); return; }
